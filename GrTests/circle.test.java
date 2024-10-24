@@ -60,15 +60,15 @@ public class OTOS_circle extends LinearOpMode {
         SparkFunOTOS.Pose2D pos = myOtos.getPosition();
         ;
 
-        while (opModeIsActive()) {
+
             // Get the latest position, which includes the x and y coordinates, plus the
             // heading angle
 
             //applying correct driving instructions under censor data
-            for(int i=0; i<5;i++){
+            for(int i = 0; i<4; i++){
                 myOtos.resetTracking();
                 pos = myOtos.getPosition();
-                while (pos.y < 30) {
+                while (pos.y < 25) {
                     bl.setPower(-0.2);
                     fl.setPower(-0.2);
                     fr.setPower(-0.2);
@@ -77,12 +77,14 @@ public class OTOS_circle extends LinearOpMode {
                     telemetry.addData("X coordinate", pos.x);
                     telemetry.addData("Y coordinate", pos.y);
                     telemetry.addData("Heading angle", pos.h);
+                    telemetry.addData("Loop Number: ", i);
                     // Update the telemetry on the driver station
                     telemetry.update();
                 }
-                
                 stopMotion();
-                while(pos.h<87){
+                sleep(500);
+                
+                while(pos.h<84){
                     bl.setPower(0.2);
                     fl.setPower(0.2);
                     fr.setPower(-0.2);
@@ -91,9 +93,15 @@ public class OTOS_circle extends LinearOpMode {
                     telemetry.addData("X coordinate", pos.x);
                     telemetry.addData("Y coordinate", pos.y);
                     telemetry.addData("Heading angle", pos.h);
+                    telemetry.addData("Loop Number: ", i);
                     // Update the telemetry on the driver station
                     telemetry.update();
+                    
                 }
+                stopMotion();
+                sleep(500);
+                
+              
             }
 
 
@@ -150,7 +158,7 @@ public class OTOS_circle extends LinearOpMode {
             stopMotion();
             */
         }
-    }
+    
     /*private void updateData(){
 
         // Log the position to the telemetry
