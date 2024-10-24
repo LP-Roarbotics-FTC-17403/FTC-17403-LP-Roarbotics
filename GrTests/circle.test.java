@@ -65,32 +65,36 @@ public class OTOS_circle extends LinearOpMode {
             // heading angle
 
             //applying correct driving instructions under censor data
-            while (pos.y < 40) {
-                bl.setPower(-0.2);
-                fl.setPower(-0.2);
-                fr.setPower(-0.2);
-                br.setPower(-0.2);
+            for(int i=0; i<5;i++){
+                myOtos.resetTracking();
                 pos = myOtos.getPosition();
-                telemetry.addData("X coordinate", pos.x);
-                telemetry.addData("Y coordinate", pos.y);
-                telemetry.addData("Heading angle", pos.h);
-                // Update the telemetry on the driver station
-                telemetry.update();
+                while (pos.y < 30) {
+                    bl.setPower(-0.2);
+                    fl.setPower(-0.2);
+                    fr.setPower(-0.2);
+                    br.setPower(-0.2);
+                    pos = myOtos.getPosition();
+                    telemetry.addData("X coordinate", pos.x);
+                    telemetry.addData("Y coordinate", pos.y);
+                    telemetry.addData("Heading angle", pos.h);
+                    // Update the telemetry on the driver station
+                    telemetry.update();
+                }
+                
+                stopMotion();
+                while(pos.h<87){
+                    bl.setPower(0.2);
+                    fl.setPower(0.2);
+                    fr.setPower(-0.2);
+                    br.setPower(-0.2);
+                    pos = myOtos.getPosition();
+                    telemetry.addData("X coordinate", pos.x);
+                    telemetry.addData("Y coordinate", pos.y);
+                    telemetry.addData("Heading angle", pos.h);
+                    // Update the telemetry on the driver station
+                    telemetry.update();
+                }
             }
-            stopMotion();
-            while (pos.h != -179.99){
-                fr.setPower(0.2);
-                br.setPower(0.2);
-                fl.setPower(-0.2);
-                bl.setPower(-0.2);
-                pos = myOtos.getPosition();
-                telemetry.addData("X coordinate", pos.x);
-                telemetry.addData("Y coordinate", pos.y);
-                telemetry.addData("Heading angle", pos.h);
-                // Update the telemetry on the driver station
-                telemetry.update();
-            }
-            stopMotion();
 
 
            
