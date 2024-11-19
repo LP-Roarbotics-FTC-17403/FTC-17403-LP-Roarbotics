@@ -375,10 +375,10 @@ public class LP24_BLUE_TELEOP_NOV13 extends LinearOpMode {
 
            if (armPosition < 45 * ARM_TICKS_PER_DEGREE){
                armLiftComp = (0.25568 * liftPosition);
+               
                if(liftPosition > LIFT_BELOW45){
                 liftPosition = LIFT_BELOW45;
-               }
-               
+               } 
            }
            else{
                armLiftComp = 0;
@@ -424,6 +424,13 @@ public class LP24_BLUE_TELEOP_NOV13 extends LinearOpMode {
             /*here we check to see if the lift is trying to go higher than the maximum extension.
            *if it is, we set the variable to the max.
             */
+
+            /*if (armPosition < 45 * ARM_TICKS_PER_DEGREE && liftPosition > LIFT_BELOW45){
+                   liftPosition = LIFT_BELOW45;
+            }
+            */
+
+        
             if (liftPosition > LIFT_SCORING_IN_HIGH_BASKET){
                    liftPosition = LIFT_SCORING_IN_HIGH_BASKET;
             }
