@@ -1,0 +1,356 @@
+
+   //MIT License
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
+  /* Copyright (c) [2024] [Base 10 Assets, LLC]
+  *
+  *   Permission is hereby granted, free of charge, to any person obtaining a copy
+  *   of this software and associated documentation files (the "Software"), to deal
+  *   in the Software without restriction, including without limitation the rights
+  *   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  *   copies of the Software, and to permit persons to whom the Software is
+  *   furnished to do so, subject to the following conditions:
+ 
+  *   The above copyright notice and this permission notice shall be included in all
+  *   copies or substantial portions of the Software.
+ 
+  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  *   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  *   SOFTWARE.
+  */
+ 
+ @Autonomous(name="TESTTEST.COPY", group="Robot")
+ 
+ 
+ public class Game_Day_Auto_Test_Copy2 extends LinearOpMode {
+ 
+     /* Declare OpMode members. */
+     DcMotorEx bl, fl, fr, br;
+     DcMotor  armMotor; //the arm motor
+     public DcMotor  liftMotor        = null; //
+     public DcMotor  hangMotor        = null;
+     public CRServo  intake           = null; //the active intake servo
+     public Servo    wrist            = null; //the wrist servo
+ 
+ 
+     /* This constant is the number of encoder ticks for each degree of rotation of the arm.
+     To find this, we first need to consider the total gear reduction powering our arm.
+     First, we have an external 20t:100t (5:1) reduction created by two spur gears.
+     But we also have an internal gear reduction in our motor.
+     The motor we use for this arm is a 117RPM Yellow Jacket. Which has an internal gear
+     reduction of ~50.9:1. (more precisely it is 250047/4913:1)
+     We can multiply these two ratios together to get our final reduction of ~254.47:1.
+     The motor's encoder counts 28 times per rotation. So in total you should see about 7125.16
+     counts per rotation of the arm. We divide that by 360 to get the counts per degree. */
+     final double ARM_TICKS_PER_DEGREE =
+             28 // number of encoder ticks per rotation of the bare motor
+                     * 250047.0 / 4913.0 // This is the exact gear ratio of the 50.9:1 Yellow Jacket gearbox
+                     * 100.0 / 20.0 // This is the external gear reduction, a 20T pinion gear that drives a 100T hub-mount gear
+                     * 1/360.0; // we want ticks per degree, not per rotation
+ 
+ 
+     /* These constants hold the position that the arm is commanded to run to.
+     These are relative to where the arm was located when you start the OpMode. So make sure the
+     arm is reset to collapsed inside the robot before you start the program.
+ 
+     In these variables you'll see a number in degrees, multiplied by the ticks per degree of the arm.
+     This results in the number of encoder ticks the arm needs to move in order to achieve the ideal
+     set position of the arm. For example, the ARM_SCORE_SAMPLE_IN_LOW is set to
+     160 * ARM_TICKS_PER_DEGREE. This asks the arm to move 160° from the starting position.
+     If you'd like it to move further, increase that number. If you'd like it to not move
+     as far from the starting position, decrease it. */
+ 
+     final double ARM_COLLAPSED_INTO_ROBOT  = 0;
+     final double ARM_COLLECT               = 0 * ARM_TICKS_PER_DEGREE;
+     final double ARM_CLEAR_BARRIER         = 15 * ARM_TICKS_PER_DEGREE;
+     final double ARM_SCORE_SPECIMEN        = 90 * ARM_TICKS_PER_DEGREE;
+     final double ARM_SCORE_SAMPLE_IN_LOW   = 90 * ARM_TICKS_PER_DEGREE;
+     final double ARM_ATTACH_HANGING_HOOK   = 110 * ARM_TICKS_PER_DEGREE;
+     final double ARM_WINCH_ROBOT           = 10  * ARM_TICKS_PER_DEGREE;
+ 
+     /* Variables to store the speed the intake servo should be set at to intake, and deposit game elements. */
+     final double INTAKE_COLLECT    = -1.0;
+     final double INTAKE_OFF        =  0.0;
+     final double INTAKE_DEPOSIT    =  0.5;
+ 
+     /* Variables to store the positions that the wrist should be set to when folding in, or folding out. */
+     final double WRIST_FOLDED_IN   = 0.1667;
+     final double WRIST_FOLDED_OUT  = 0.52;
+ 
+     /* A number in degrees that the triggers can adjust the arm position by */
+     final double FUDGE_FACTOR = 15 * ARM_TICKS_PER_DEGREE;
+ 
+     /* Variables that are used to set the arm to a specific position */
+     double armPosition = (int)ARM_COLLAPSED_INTO_ROBOT;
+     double armPositionFudgeFactor;
+ 
+     final double LIFT_TICKS_PER_MM = (111132.0 / 289.0) / 120.0;
+ 
+     final double LIFT_COLLAPSED = 0 * LIFT_TICKS_PER_MM;
+     final double LIFT_SCORING_IN_LOW_BASKET = 0 * LIFT_TICKS_PER_MM;
+     final double LIFT_SCORING_IN_HIGH_BASKET = 455 * LIFT_TICKS_PER_MM;
+ 
+     double liftPosition = LIFT_COLLAPSED;
+ 
+     double cycletime = 0;
+     double looptime = 0;
+     double oldtime = 0;
+ 
+     double armLiftComp = 0;
+      SparkFunOTOS myOtos;
+ 
+     @Override
+     public void runOpMode() {
+      myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
+         /*
+         These variables are private to the OpMode, and are used to control the drivetrain.
+          */
+         double left;
+         double right;
+         double forward;
+         double rotate;
+         double max;
+ 
+ 
+         /* Define and Initialize Motors */
+          bl = hardwareMap.get(DcMotorEx.class, "backLeftMotor");
+        fl = hardwareMap.get(DcMotorEx.class, "frontLeftMotor");
+        fr = hardwareMap.get(DcMotorEx.class, "frontRightMotor");
+        br = hardwareMap.get(DcMotorEx.class, "backRightMotor");
+        //bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        
+         liftMotor       = hardwareMap.dcMotor.get("slideMotor");
+         armMotor        = hardwareMap.get(DcMotor.class, "armMotor"); //the arm motor
+        
+ 
+ 
+        
+         
+         bl.setDirection(DcMotorSimple.Direction.REVERSE);
+        fl.setDirection(DcMotorSimple.Direction.REVERSE);
+ 
+         
+         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+ 
+         
+         ((DcMotorEx) armMotor).setCurrentAlert(5,CurrentUnit.AMPS);
+ 
+ 
+         /* Before starting the armMotor. We'll make sure the TargetPosition is set to 0.
+         Then we'll set the RunMode to RUN_TO_POSITION. And we'll ask it to stop and reset encoder.
+         If you do not have the encoder plugged into this motor, it will not run in this code. */
+         armMotor.setTargetPosition(0);
+         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+ 
+         liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+         liftMotor.setTargetPosition(0);
+         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+         /* Define and initialize servos.*/
+         intake = hardwareMap.get(CRServo.class, "intake");
+         wrist  = hardwareMap.get(Servo.class, "wrist");
+ 
+         /* Make sure that the intake is off, and the wrist is folded in. */
+         intake.setPower(INTAKE_OFF);
+        // wrist.setPosition(WRIST_FOLDED_IN);
+ 
+         /* Send telemetry message to signify robot waiting */
+         telemetry.addLine("Robot Ready.");
+         telemetry.update();
+         
+         /* Wait for the game driver to press play */
+         configureOtos();
+         waitForStart();
+                  
+            while (opModeIsActive()){
+        
+         
+        SparkFunOTOS.Pose2D pos = myOtos.getPosition();
+        
+        
+ 
+        
+         
+          boolean done = true;
+         pos = myOtos.getPosition();
+         while(pos.x<16 && done==true){
+          armMotor.setTargetPosition ((int)ARM_SCORE_SAMPLE_IN_LOW);
+                fr.setPower(-0.5);
+                fl.setPower(0.5);
+                bl.setPower(-0.5);
+                br.setPower(0.5);
+                pos = myOtos.getPosition();
+                telemetry.addData("X coordinate", pos.x);
+                telemetry.addData("Y coordinate", pos.y);
+                telemetry.addData("Heading angle", pos.h);
+                // Update the telemetry on the driver station
+                telemetry.update();
+                 wrist.setPosition(WRIST_FOLDED_OUT);
+           }
+           stopMotion();
+           
+           ((DcMotorEx) armMotor).setVelocity(1500);
+         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+           
+           done=false;
+           boolean slide = false;
+          
+          
+            intake.setPower(INTAKE_DEPOSIT);
+            liftMotor.setTargetPosition((int) (LIFT_SCORING_IN_HIGH_BASKET));
+           ((DcMotorEx) liftMotor).setVelocity(1000);
+           liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+           sel
+           
+           
+           
+           
+           
+         
+         
+           /* while (pos.y < 19){
+             
+                fr.setPower(0.3);
+                fl.setPower(0.3);
+                bl.setPower(0.3);
+                br.setPower(0.3);
+                pos = myOtos.getPosition();
+                telemetry.addData("X coordinate", pos.x);
+                telemetry.addData("Y coordinate", pos.y);
+                telemetry.addData("Heading angle", pos.h);
+                // Update the telemetry on the driver station
+                telemetry.update();
+            }
+            */
+            
+ 
+ 
+             
+             looptime = getRuntime();
+             cycletime = looptime-oldtime;
+             oldtime = looptime;
+ 
+ 
+            /* send telemetry to the driver of the arm's current position and target position */
+            telemetry.addData("arm Target Position: ", armMotor.getTargetPosition());
+            telemetry.addData("arm Encoder: ", armMotor.getCurrentPosition());
+            telemetry.addData("lift variable", liftPosition);
+            telemetry.addData("Lift Target Position",liftMotor.getTargetPosition());
+            telemetry.addData("lift current position", liftMotor.getCurrentPosition());
+            telemetry.addData("liftMotor Current:",((DcMotorEx) liftMotor).getCurrent(CurrentUnit.AMPS));
+            telemetry.update();
+         
+ 
+ 
+        }
+     }
+     private void stopMotion(){
+                fr.setPower(0);
+                fl.setPower(0);
+                bl.setPower(0);
+                br.setPower(0);
+     }
+         private void configureOtos() {
+         telemetry.addLine("Configuring OTOS...");
+         telemetry.update();
+ 
+         // Set the desired units for linear and angular measurements. Can be either
+         // meters or inches for linear, and radians or degrees for angular. If not
+         // set, the default is inches and degrees. Note that this setting is not
+         // persisted in the sensor, so you need to set at the start of all your
+         // OpModes if using the non-default value.
+         // myOtos.setLinearUnit(DistanceUnit.METER);
+         myOtos.setLinearUnit(DistanceUnit.INCH);
+         // myOtos.setAngularUnit(AnguleUnit.RADIANS);
+         myOtos.setAngularUnit(AngleUnit.DEGREES);
+ 
+         // Assuming you've mounted your sensor to a robot and it's not centered,
+         // you can specify the offset for the sensor relative to the center of the
+         // robot. The units default to inches and degrees, but if you want to use
+         // different units, specify them before setting the offset! Note that as of
+         // firmware version 1.0, these values will be lost after a power cycle, so
+         // you will need to set them each time you power up the sensor. For example, if
+         // the sensor is mounted 5 inches to the left (negative X) and 10 inches
+         // forward (positive Y) of the center of the robot, and mounted 90 degrees
+         // clockwise (negative rotation) from the robot's orientation, the offset
+         // would be {-5, 10, -90}. These can be any value, even the angle can be
+         // tweaked slightly to compensate for imperfect mounting (eg. 1.3 degrees).
+         SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 2, 0);
+         myOtos.setOffset(offset);
+ 
+         // Here we can set the linear and angular scalars, which can compensate for
+         // scaling issues with the sensor measurements. Note that as of firmware
+         // version 1.0, these values will be lost after a power cycle, so you will
+         // need to set them each time you power up the sensor. They can be any value
+         // from 0.872 to 1.127 in increments of 0.001 (0.1%). It is recommended to
+         // first set both scalars to 1.0, then calibrate the angular scalar, then
+         // the linear scalar. To calibrate the angular scalar, spin the robot by
+         // multiple rotations (eg. 10) to get a precise error, then set the scalar
+         // to the inverse of the error. Remember that the angle wraps from -180 to
+         // 180 degrees, so for example, if after 10 rotations counterclockwise
+         // (positive rotation), the sensor reports -15 degrees, the required scalar
+         // would be 3600/3585 = 1.004. To calibrate the linear scalar, move the
+         // robot a known distance and measure the error; do this multiple times at
+         // multiple speeds to get an average, then set the linear scalar to the
+         // inverse of the error. For example, if you move the robot 100 inches and
+         // the sensor reports 103 inches, set the linear scalar to 100/103 = 0.971
+         myOtos.setLinearScalar(1.0);
+         myOtos.setAngularScalar(1.0);
+ 
+         // The IMU on the OTOS includes a gyroscope and accelerometer, which could
+         // have an offset. Note that as of firmware version 1.0, the calibration
+         // will be lost after a power cycle; the OTOS performs a quick calibration
+         // when it powers up, but it is recommended to perform a more thorough
+         // calibration at the start of all your OpModes. Note that the sensor must
+         // be completely stationary and flat during calibration! When calling
+         // calibrateImu(), you can specify the number of samples to take and whether
+         // to wait until the calibration is complete. If no parameters are provided,
+         // it will take 255 samples and wait until done; each sample takes about
+         // 2.4ms, so about 612ms total
+         myOtos.calibrateImu();
+
+
+         myOtos.resetTracking();
+
+         SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
+         myOtos.setPosition(currentPosition);
+ 
+         // Get the hardware and firmware version
+         SparkFunOTOS.Version hwVersion = new SparkFunOTOS.Version();
+         SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();
+         myOtos.getVersionInfo(hwVersion, fwVersion);
+ 
+         telemetry.addLine("OTOS configured! Press start to get position data!");
+         telemetry.addLine();
+         telemetry.addLine(String.format("OTOS Hardware Version: v%d.%d", hwVersion.major, hwVersion.minor));
+         telemetry.addLine(String.format("OTOS Firmware Version: v%d.%d", fwVersion.major, fwVersion.minor));
+         telemetry.update();
+     }
+     }
