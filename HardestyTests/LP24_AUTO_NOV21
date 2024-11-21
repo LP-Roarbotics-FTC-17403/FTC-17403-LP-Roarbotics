@@ -145,11 +145,14 @@ public class LP24_AUTO_NOV21 extends LinearOpMode {
             wrist.setPosition(WRIST_FOLDED_IN);
 
             //Raise arm to barrier position
-            armMotor.setTargetPosition ((int)ARM_CLEAR_BARRIER);
+            armPosition = ARM_CLEAR_BARRIER;
+            armMotor.setTargetPosition ((int)armPosition);
             armMotor.setVelocity(1500);
             while (armMotor.isBusy() && opModeIsActive() && timer.milliseconds() < 5000) {
-                telemetry.addData("Arm Target Position", armMotor.getTargetPosition());
-                telemetry.addData("Arm Current Position", armMotor.getCurrentPosition());
+                telemetry.addData("Arm Variable", armPosition);
+                telemetry.addData("Arm Target Position: ", armMotor.getTargetPosition());
+                telemetry.addData("Arm Current Position: ", armMotor.getCurrentPosition());
+                telemetry.addData("ArmMotor Current:",armMotor.getCurrent(CurrentUnit.AMPS));
                 telemetry.update();
             }
             timer.reset();
@@ -174,57 +177,72 @@ public class LP24_AUTO_NOV21 extends LinearOpMode {
             timer.reset();
 
             //Set arm to scoring position
-            armMotor.setTargetPosition ((int)ARM_SCORE_SAMPLE_IN_HIGH);
+            armPosition = ARM_SCORE_SAMPLE_IN_HIGH;
+            armMotor.setTargetPosition ((int)armPosition);
             armMotor.setVelocity(1500);
             while (armMotor.isBusy() && opModeIsActive() && timer.milliseconds() < 5000) {
-                telemetry.addData("Arm Target Position", armMotor.getTargetPosition());
-                telemetry.addData("Arm Current Position", armMotor.getCurrentPosition());
+                telemetry.addData("Arm Variable", armPosition);
+                telemetry.addData("Arm Target Position: ", armMotor.getTargetPosition());
+                telemetry.addData("Arm Current Position: ", armMotor.getCurrentPosition());
+                telemetry.addData("ArmMotor Current:",armMotor.getCurrent(CurrentUnit.AMPS));
                 telemetry.update();
             }
             timer.reset();
 
             //Raise lift / slide to high basket scoring position
-            liftMotor.setTargetPosition ((int)LIFT_SCORING_IN_HIGH_BASKET);
+            liftPosition = LIFT_SCORING_IN_HIGH_BASKET;
+            liftMotor.setTargetPosition ((int)liftPosition);
             liftMotor.setVelocity(1000);
             while (liftMotor.isBusy() && opModeIsActive() && timer.milliseconds() < 5000) {
-                telemetry.addData("Arm Target Position", armMotor.getTargetPosition());
-                telemetry.addData("Arm Current Position", armMotor.getCurrentPosition());
+                telemetry.addData("Lift Variable", liftPosition);
+                telemetry.addData("Lift Target Position",liftMotor.getTargetPosition());
+                telemetry.addData("Lift Current position", liftMotor.getCurrentPosition());
+                telemetry.addData("LiftMotor Current:",liftMotor.getCurrent(CurrentUnit.AMPS));
                 telemetry.update();
             }
             timer.reset();
 
+            //Deposit sample
             intake.setPower(INTAKE_DEPOSIT);
             sleep(2000);
             intake.setPower(INTAKE_OFF);
 
             //Return lift / slide to home position
-            liftMotor.setTargetPosition ((int)LIFT_COLLAPSED);
+            liftPosition = LIFT_COLLAPSED;
+            liftMotor.setTargetPosition ((int)liftPosition);
             liftMotor.setVelocity(1000);
             while (liftMotor.isBusy() && opModeIsActive() && timer.milliseconds() < 5000) {
-                telemetry.addData("Arm Target Position", armMotor.getTargetPosition());
-                telemetry.addData("Arm Current Position", armMotor.getCurrentPosition());
+                telemetry.addData("Lift Variable", liftPosition);
+                telemetry.addData("Lift Target Position",liftMotor.getTargetPosition());
+                telemetry.addData("Lift Current position", liftMotor.getCurrentPosition());
+                telemetry.addData("LiftMotor Current:",liftMotor.getCurrent(CurrentUnit.AMPS));
                 telemetry.update();
             }
             timer.reset();
 
             //Lower Arm
-            armMotor.setTargetPosition ((int)ARM_CLEAR_BARRIER);
+            armPosition = ARM_CLEAR_BARRIER;
+            armMotor.setTargetPosition ((int)armPosition);
             armMotor.setVelocity(1500);
             while (armMotor.isBusy() && opModeIsActive() && timer.milliseconds() < 5000) {
-                telemetry.addData("Arm Target Position", armMotor.getTargetPosition());
-                telemetry.addData("Arm Current Position", armMotor.getCurrentPosition());
+                telemetry.addData("Arm Variable", armPosition);
+                telemetry.addData("Arm Target Position: ", armMotor.getTargetPosition());
+                telemetry.addData("Arm Current Position: ", armMotor.getCurrentPosition());
+                telemetry.addData("ArmMotor Current:",armMotor.getCurrent(CurrentUnit.AMPS));
                 telemetry.update();
             }
             timer.reset();
 
             /* send telemetry to the driver of the arm's current position and target position */
-            telemetry.addData("arm Target Position: ", armMotor.getTargetPosition());
-            telemetry.addData("arm Encoder: ", armMotor.getCurrentPosition());
-            telemetry.addData("armMotor Current:",armMotor.getCurrent(CurrentUnit.AMPS));
-            telemetry.addData("lift variable", liftPosition);
+            telemetry.addData("Arm Variable", armPosition);
+            telemetry.addData("Arm Target Position: ", armMotor.getTargetPosition());
+            telemetry.addData("Arm Current Position: ", armMotor.getCurrentPosition());
+            telemetry.addData("ArmMotor Current:",armMotor.getCurrent(CurrentUnit.AMPS));
+
+            telemetry.addData("Lift Variable", liftPosition);
             telemetry.addData("Lift Target Position",liftMotor.getTargetPosition());
-            telemetry.addData("lift current position", liftMotor.getCurrentPosition());
-            telemetry.addData("liftMotor Current:",liftMotor.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("Lift Current position", liftMotor.getCurrentPosition());
+            telemetry.addData("LiftMotor Current:",liftMotor.getCurrent(CurrentUnit.AMPS));
             telemetry.update();
             sleep(10000);
 
