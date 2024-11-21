@@ -1,0 +1,83 @@
+public void runOpMode() {
+    // Initialize hardware and other variables
+    // (Assuming hardware initialization is already done)
+
+    waitForStart();  // Wait for the start of the match
+
+    if (opModeIsActive()) {
+        // Step 1: Move Right until pos.x > 16
+        SparkFunOTOS.Pose2D pos = myOtos.getPosition();
+        while (pos.x < 16 && opModeIsActive()) {
+            armMotor.setTargetPosition((int) ARM_SCORE_SAMPLE_IN_LOW);
+            fr.setPower(-0.5);
+            fl.setPower(0.5);
+            bl.setPower(-0.5);
+            br.setPower(0.5);
+
+            pos = myOtos.getPosition();
+            telemetry.addData("X coordinate", pos.x);
+            telemetry.addData("Y coordinate", pos.y);
+            telemetry.addData("Heading angle", pos.h);
+            telemetry.update();
+            wrist.setPosition(WRIST_FOLDED_OUT);
+        }
+        stopMotion();  // Stop the motion after reaching position
+
+        // Step 2: Raise the arm to a set position
+        armMotor.setTargetPosition((int) ARM_RAISE_POSITION);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (armMotor.isBusy() && opModeIsActive()) {
+            telemetry.addData("Arm Target Position", armMotor.getTargetPosition());
+            telemetry.addData("Arm Current Position", armMotor.getCurrentPosition());
+            telemetry.update();
+        }
+
+        // Step 3: Extend the slide to a set position
+        liftMotor.setTargetPosition((int) LIFT_EXTEND_POSITION);
+        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (liftMotor.isBusy() && opModeIsActive()) {
+            telemetry.addData("Lift Target Position", liftMotor.getTargetPosition());
+            telemetry.addData("Lift Current Position", liftMotor.getCurrentPosition());
+            telemetry.update();
+        }
+
+        // Step 4: Turn on the intake
+        intake.setPower(INTAKE_DEPOSIT);
+        sleep(2000);  // Sleep for 2 seconds to allow the intake to run
+
+        // Step 5: Turn off the intake
+        intake.setPower(INTAKE_OFF);
+
+        // Step 6: Wait for 1 second before retracting the slide
+        sleep(1000);  // Sleep for 1 second before retracting
+
+        // Step 7: Retract the slide
+        liftMotor.setTargetPosition((int) LIFT_RETRACT_POSITION);
+        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (liftMotor.isBusy() && opModeIsActive()) {
+            telemetry.addData("Lift Target Position", liftMotor.getTargetPosition());
+            telemetry.addData("Lift Current Position", liftMotor.getCurrentPosition());
+            telemetry.update();
+        }
+
+        // Step 8: Lower the arm
+        armMotor.setTargetPosition((int) ARM_LOWER_POSITION);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (armMotor.isBusy() && opModeIsActive()) {
+            telemetry.addData("Arm Target Position", armMotor.getTargetPosition());
+            telemetry.addData("Arm Current Position", armMotor.getCurrentPosition());
+            telemetry.update();
+        }
+
+        // Final Step: Stop all motors
+        stopMotion();
+    }
+}
+
+// Method to stop all motion
+private void stopMotion() {
+    fr.setPower(0);
+    fl.setPower(0);
+    bl.setPower(0);
+    br.setPower(0);
+}
