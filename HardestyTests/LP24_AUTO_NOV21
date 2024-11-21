@@ -21,11 +21,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class LP24_AUTO_NOV21 extends LinearOpMode {
 
     /* Declare OpMode members. */
-    DcMotorEx bl, fl, fr, br;
-    DcMotorEx  armMotor; //the arm motor
-    public DcMotorEx  liftMotor        = null; //
-    public CRServo  intake           = null; //the active intake servo
-    public Servo    wrist            = null; //the wrist servo
+    public DcMotorEx bl = null, fl = null, fr = null, br = null;
+    public DcMotorEx armMotor = null; // The arm motor
+    public DcMotorEx liftMotor = null; // The lift motor
+    public CRServo intake = null; // The active intake servo
+    public Servo wrist = null; // The wrist servo
 
 
     /* This constant is the number of encoder ticks for each degree of rotation of the arm.*/
@@ -79,10 +79,6 @@ public class LP24_AUTO_NOV21 extends LinearOpMode {
         fl = hardwareMap.get(DcMotorEx.class, "frontLeftMotor");
         fr = hardwareMap.get(DcMotorEx.class, "frontRightMotor");
         br = hardwareMap.get(DcMotorEx.class, "backRightMotor");
-        //bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         liftMotor       = hardwareMap.get(DcMotorEx.class, "slideMotor"); //the lift motor aka slide
         armMotor        = hardwareMap.get(DcMotorEx.class, "armMotor"); //the arm motor
@@ -98,22 +94,21 @@ public class LP24_AUTO_NOV21 extends LinearOpMode {
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
         armMotor.setCurrentAlert(5,CurrentUnit.AMPS);
         liftMotor.setCurrentAlert(5,CurrentUnit.AMPS);
-
 
          /* Before starting the armMotor. We'll make sure the TargetPosition is set to 0.
          Then we'll set the RunMode to RUN_TO_POSITION. And we'll ask it to stop and reset encoder.
          If you do not have the encoder plugged into this motor, it will not run in this code. */
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armMotor.setTargetPosition(0);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor.setTargetPosition(0);
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
         /* Define and initialize servos.*/
         intake = hardwareMap.get(CRServo.class, "intake");
@@ -152,7 +147,6 @@ public class LP24_AUTO_NOV21 extends LinearOpMode {
             //Raise arm to barrier position
             armMotor.setTargetPosition ((int)ARM_CLEAR_BARRIER);
             armMotor.setVelocity(1500);
-            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             while (armMotor.isBusy() && opModeIsActive() && timer.milliseconds() < 5000) {
                 telemetry.addData("Arm Target Position", armMotor.getTargetPosition());
                 telemetry.addData("Arm Current Position", armMotor.getCurrentPosition());
@@ -182,7 +176,6 @@ public class LP24_AUTO_NOV21 extends LinearOpMode {
             //Set arm to scoring position
             armMotor.setTargetPosition ((int)ARM_SCORE_SAMPLE_IN_HIGH);
             armMotor.setVelocity(1500);
-            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             while (armMotor.isBusy() && opModeIsActive() && timer.milliseconds() < 5000) {
                 telemetry.addData("Arm Target Position", armMotor.getTargetPosition());
                 telemetry.addData("Arm Current Position", armMotor.getCurrentPosition());
@@ -193,7 +186,6 @@ public class LP24_AUTO_NOV21 extends LinearOpMode {
             //Raise lift / slide to high basket scoring position
             liftMotor.setTargetPosition ((int)LIFT_SCORING_IN_HIGH_BASKET);
             liftMotor.setVelocity(1000);
-            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             while (liftMotor.isBusy() && opModeIsActive() && timer.milliseconds() < 5000) {
                 telemetry.addData("Arm Target Position", armMotor.getTargetPosition());
                 telemetry.addData("Arm Current Position", armMotor.getCurrentPosition());
@@ -208,7 +200,6 @@ public class LP24_AUTO_NOV21 extends LinearOpMode {
             //Return lift / slide to home position
             liftMotor.setTargetPosition ((int)LIFT_COLLAPSED);
             liftMotor.setVelocity(1000);
-            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             while (liftMotor.isBusy() && opModeIsActive() && timer.milliseconds() < 5000) {
                 telemetry.addData("Arm Target Position", armMotor.getTargetPosition());
                 telemetry.addData("Arm Current Position", armMotor.getCurrentPosition());
@@ -219,7 +210,6 @@ public class LP24_AUTO_NOV21 extends LinearOpMode {
             //Lower Arm
             armMotor.setTargetPosition ((int)ARM_CLEAR_BARRIER);
             armMotor.setVelocity(1500);
-            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             while (armMotor.isBusy() && opModeIsActive() && timer.milliseconds() < 5000) {
                 telemetry.addData("Arm Target Position", armMotor.getTargetPosition());
                 telemetry.addData("Arm Current Position", armMotor.getCurrentPosition());
