@@ -370,3 +370,28 @@ import com.qualcomm.robotcore.util.ElapsedTime;
          telemetry.update();
      }
      }
+
+public void forward(speed){
+    fr.setPower(speed);
+    fl.setPower(speed);
+    bl.setPower(speed);
+    br.setPower(speed);
+}
+public void backward(speed){
+    fr.setPower(speed);
+    fl.setPower(speed);
+    bl.setPower(speed);
+    br.setPower(speed);
+}
+public void stRight(speed){
+    fr.setPower();
+    fl.setPower(-0.5);
+    bl.setPower(-0.5);
+    br.setPower(-0.5);
+}
+public void stLeft(speed){
+    fr.setPower(-0.5);
+    fl.setPower(-0.5);
+    bl.setPower(-0.5);
+    br.setPower(-0.5);
+}
