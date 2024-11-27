@@ -58,7 +58,7 @@ public class LP24_AUTO_NOV21 extends LinearOpMode {
 
 
     double armPosition = (int)ARM_COLLAPSED_INTO_ROBOT;
-    double liftPosition = LIFT_COLLAPSED;
+    
 
     // Calculates lift ticks per mm using motor encoder
     final double LIFT_TICKS_PER_MM = (111132.0 / 289.0) / 120.0;
@@ -67,6 +67,8 @@ public class LP24_AUTO_NOV21 extends LinearOpMode {
     final double LIFT_COLLAPSED = 0 * LIFT_TICKS_PER_MM;
     final double LIFT_SCORING_IN_LOW_BASKET = 0 * LIFT_TICKS_PER_MM;
     final double LIFT_SCORING_IN_HIGH_BASKET = 455 * LIFT_TICKS_PER_MM;
+
+    double liftPosition = LIFT_COLLAPSED;
 
     SparkFunOTOS myOtos;
 
