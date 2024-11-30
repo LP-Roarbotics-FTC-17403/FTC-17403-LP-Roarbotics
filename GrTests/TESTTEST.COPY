@@ -384,14 +384,26 @@ public void backward(speed){
     br.setPower(speed);
 }
 public void stRight(speed){
-    fr.setPower();
-    fl.setPower(-0.5);
-    bl.setPower(-0.5);
-    br.setPower(-0.5);
+    fr.setPower(speed);
+    fl.setPower(-1*speed);
+    bl.setPower(speed);
+    br.setPower(-1*speed);
 }
 public void stLeft(speed){
-    fr.setPower(-0.5);
-    fl.setPower(-0.5);
-    bl.setPower(-0.5);
-    br.setPower(-0.5);
+    fr.setPower(-1*speed);
+    fl.setPower(speed);
+    bl.setPower(-1*speed);
+    br.setPower(speed);
+}
+public void rotateRight(speed){
+    fr.setPower(-1*speed);
+    fl.setPower(speed);
+    bl.setPower(speed);
+    br.setPower(-1*speed);
+}
+public void rotateLeft(speed){
+    fr.setPower(speed);
+    fl.setPower(-1*speed);
+    bl.setPower(-1*speed);
+    br.setPower(speed);
 }
