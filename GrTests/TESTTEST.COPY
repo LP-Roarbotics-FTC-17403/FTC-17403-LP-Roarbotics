@@ -378,10 +378,10 @@ public void forward(speed){
     br.setPower(speed);
 }
 public void backward(speed){
-    fr.setPower(speed);
-    fl.setPower(speed);
-    bl.setPower(speed);
-    br.setPower(speed);
+    fr.setPower(-1* speed);
+    fl.setPower(-1*speed);
+    bl.setPower(-1*speed);
+    br.setPower(-1*speed);
 }
 public void stRight(speed){
     fr.setPower(speed);
@@ -406,4 +406,48 @@ public void rotateLeft(speed){
     fl.setPower(-1*speed);
     bl.setPower(-1*speed);
     br.setPower(speed);
+}
+//attempting to combine all movements into one big method, move = what to do, speed = how fast, d = distance, time = time before forced stop.
+public void movement(move, speed, d, time){
+   //checking for the actual direction and movement
+   if(move = "forward"){
+      timer.reset();
+      fr.setPower(speed);
+      fl.setPower(speed);
+      bl.setPower(speed);
+      br.setPower(speed); 
+      //stopping motor at a certain point
+      if(pos.y
+   }
+   if(move == "backward"){
+      fr.setPower(-1* speed);
+      fl.setPower(-1*speed);
+      bl.setPower(-1*speed);
+      br.setPower(-1*speed);
+   }
+   if(move == "stRght"){
+      fr.setPower(speed);
+      fl.setPower(-1*speed);
+      bl.setPower(speed);
+      br.setPower(-1*speed);
+   }
+   if(move == "stLeft"){
+       fr.setPower(-1*speed);
+       fl.setPower(speed);
+       bl.setPower(-1*speed);
+       br.setPower(speed);
+   }
+   if(move == "rRight"){
+       fr.setPower(-1*speed);
+       fl.setPower(speed);
+       bl.setPower(speed);
+       br.setPower(-1*speed);
+   }
+   if(move == "rLeft"){
+       fr.setPower(speed);
+       fl.setPower(-1*speed);
+       bl.setPower(-1*speed);
+       br.setPower(speed);
+   }
+
 }
