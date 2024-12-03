@@ -425,10 +425,7 @@ public void movement(move, speed, d, time)
          telemetry.update();
       }
       //stopping motor at a certain point
-         fr.setPower(0);
-         fl.setPower(0);
-         bl.setPower(0);
-         br.setPower(0); 
+         stopMotion(); 
    }
 
    if(move == "backward"){
@@ -446,10 +443,7 @@ public void movement(move, speed, d, time)
          telemetry.update();
       }
       //stopping motor at a certain point
-         fr.setPower(0);
-         fl.setPower(0);
-         bl.setPower(0);
-         br.setPower(0); 
+         stopMotion(); 
    }
 
    if(move == "stRght"){
@@ -467,10 +461,7 @@ public void movement(move, speed, d, time)
          telemetry.update();
       }
       //stopping motor at a certain point
-         fr.setPower(0);
-         fl.setPower(0);
-         bl.setPower(0);
-         br.setPower(0); 
+         stopMotion(); 
    }
 
    if(move == "stLeft"){
@@ -488,10 +479,7 @@ public void movement(move, speed, d, time)
          telemetry.update();
       }
       //stopping motor at a certain point
-         fr.setPower(0);
-         fl.setPower(0);
-         bl.setPower(0);
-         br.setPower(0); 
+         stopMotion(); 
    }
 
    if(move == "rRight"){
@@ -509,10 +497,7 @@ public void movement(move, speed, d, time)
          telemetry.update();
       }
       //stopping motor at a certain point
-         fr.setPower(0);
-         fl.setPower(0);
-         bl.setPower(0);
-         br.setPower(0); 
+         stopMotion(); 
    }
 
    if(move == "rLeft"){
@@ -530,10 +515,7 @@ public void movement(move, speed, d, time)
          telemetry.update();
       }
       //stopping motor at a certain point
-         fr.setPower(0);
-         fl.setPower(0);
-         bl.setPower(0);
-         br.setPower(0); 
+         stopMotion(); 
    }
 
 }
