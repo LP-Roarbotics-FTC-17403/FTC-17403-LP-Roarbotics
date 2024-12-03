@@ -328,6 +328,16 @@ public class LP24_BLUE_TELEOP_NOV13 extends LinearOpMode {
                     armPosition = ARM_SCORE_SAMPLE_IN_LOW;
                     //liftPosition = LIFT_SCORING_IN_HIGH_BASKET;
                 }
+                
+                else if (gamepad2.dpad_left) {
+                    wrist.setPosition(WRIST_FOLDED_IN);
+                    
+                }
+                
+                else if (gamepad2.dpad_right) {
+                    wrist.setPosition(WRIST_FOLDED_OUT);
+                    
+                }
 
                 else if (gamepad1.x) {
                     /* This turns off the intake, folds in the wrist, and moves the arm
