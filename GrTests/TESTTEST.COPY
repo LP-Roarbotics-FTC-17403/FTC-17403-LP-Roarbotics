@@ -408,46 +408,132 @@ public void rotateLeft(speed){
     br.setPower(speed);
 }
 //attempting to combine all movements into one big method, move = what to do, speed = how fast, d = distance, time = time before forced stop.
-public void movement(move, speed, d, time){
+public void movement(move, speed, d, time)
    //checking for the actual direction and movement
    if(move = "forward"){
       timer.reset();
-      fr.setPower(speed);
-      fl.setPower(speed);
-      bl.setPower(speed);
-      br.setPower(speed); 
+      while(pos.y>d || timer.seconds()>time){
+         fr.setPower(speed);
+         fl.setPower(speed);
+         bl.setPower(speed);
+         br.setPower(speed); 
+         pos =myOtos.getPosition();
+         telemetry.addData("X coordinate", pos.x);
+         telemetry.addData("Y coordinate", pos.y);
+         telemetry.addData("Heading angle", pos.h);
+         // Update the telemetry on the driver station
+         telemetry.update();
+      }
       //stopping motor at a certain point
-      if(pos.y
+         fr.setPower(0);
+         fl.setPower(0);
+         bl.setPower(0);
+         br.setPower(0); 
    }
+
    if(move == "backward"){
-      fr.setPower(-1* speed);
-      fl.setPower(-1*speed);
-      bl.setPower(-1*speed);
-      br.setPower(-1*speed);
+      timer.reset();
+      while(pos.y<d || timer.seconds()>time){
+         fr.setPower(-1* speed);
+         fl.setPower(-1*speed);
+         bl.setPower(-1*speed);
+         br.setPower(-1*speed);
+      pos =myOtos.getPosition();
+         telemetry.addData("X coordinate", pos.x);
+         telemetry.addData("Y coordinate", pos.y);
+         telemetry.addData("Heading angle", pos.h);
+         // Update the telemetry on the driver station
+         telemetry.update();
+      }
+      //stopping motor at a certain point
+         fr.setPower(0);
+         fl.setPower(0);
+         bl.setPower(0);
+         br.setPower(0); 
    }
+
    if(move == "stRght"){
-      fr.setPower(speed);
-      fl.setPower(-1*speed);
-      bl.setPower(speed);
-      br.setPower(-1*speed);
+      timer.reset();
+      while(pos.x>d || timer.seconds()>time){
+         fr.setPower(speed);
+         fl.setPower(-1*speed);
+         bl.setPower(speed);
+         br.setPower(-1*speed);
+      pos =myOtos.getPosition();
+         telemetry.addData("X coordinate", pos.x);
+         telemetry.addData("Y coordinate", pos.y);
+         telemetry.addData("Heading angle", pos.h);
+         // Update the telemetry on the driver station
+         telemetry.update();
+      }
+      //stopping motor at a certain point
+         fr.setPower(0);
+         fl.setPower(0);
+         bl.setPower(0);
+         br.setPower(0); 
    }
+
    if(move == "stLeft"){
-       fr.setPower(-1*speed);
-       fl.setPower(speed);
-       bl.setPower(-1*speed);
-       br.setPower(speed);
+      timer.reset();
+      while(pos.x<d || timer.seconds()>time){
+          fr.setPower(-1*speed);
+          fl.setPower(speed);
+          bl.setPower(-1*speed);
+          br.setPower(speed);
+     pos =myOtos.getPosition();
+         telemetry.addData("X coordinate", pos.x);
+         telemetry.addData("Y coordinate", pos.y);
+         telemetry.addData("Heading angle", pos.h);
+         // Update the telemetry on the driver station
+         telemetry.update();
+      }
+      //stopping motor at a certain point
+         fr.setPower(0);
+         fl.setPower(0);
+         bl.setPower(0);
+         br.setPower(0); 
    }
+
    if(move == "rRight"){
-       fr.setPower(-1*speed);
-       fl.setPower(speed);
-       bl.setPower(speed);
-       br.setPower(-1*speed);
+      timer.reset();
+      while(pos.h<d || timer.seconds()>time){
+          fr.setPower(-1*speed);
+          fl.setPower(speed);
+          bl.setPower(speed);
+          br.setPower(-1*speed);
+      pos =myOtos.getPosition();
+         telemetry.addData("X coordinate", pos.x);
+         telemetry.addData("Y coordinate", pos.y);
+         telemetry.addData("Heading angle", pos.h);
+         // Update the telemetry on the driver station
+         telemetry.update();
+      }
+      //stopping motor at a certain point
+         fr.setPower(0);
+         fl.setPower(0);
+         bl.setPower(0);
+         br.setPower(0); 
    }
+
    if(move == "rLeft"){
-       fr.setPower(speed);
-       fl.setPower(-1*speed);
-       bl.setPower(-1*speed);
-       br.setPower(speed);
+      timer.reset();
+      while(pos.h>d || timer.seconds()>time){
+          fr.setPower(speed);
+          fl.setPower(-1*speed);
+          bl.setPower(-1*speed);
+          br.setPower(speed);
+      pos =myOtos.getPosition();
+         telemetry.addData("X coordinate", pos.x);
+         telemetry.addData("Y coordinate", pos.y);
+         telemetry.addData("Heading angle", pos.h);
+         // Update the telemetry on the driver station
+         telemetry.update();
+      }
+      //stopping motor at a certain point
+         fr.setPower(0);
+         fl.setPower(0);
+         bl.setPower(0);
+         br.setPower(0); 
    }
 
 }
