@@ -310,15 +310,29 @@ public class LP24_AUTO_NOV21_Copy extends LinearOpMode {
 
 
 //attempting to combine all movements into one big method, move = what to do, speed = how fast, d = distance, time = time before forced stop.
-public void movement(String move, double speed, double  d, int time){
+public void movement(String move, double spd, double  d, int time){
    //checking for the actual direction and movement
+
+    //creating variables for left and right wheels speed
+    private double speed = spd;
+    private double rSpeed = spd;
+    private double lSpeed = spd;
+    
    if(move == "forward"){
       timer.reset();
       while(pos.y>d || timer.seconds()>time){
-         fr.setPower(speed);
-         fl.setPower(speed);
-         bl.setPower(speed);
-         br.setPower(speed); 
+        //if the angles does off, one side of the wheel depending on where way robot tilted off, will be increased
+        //in power, which then allows for the robot to fix its own angle.
+        if(pos.h<0){
+            lSpeed *= 1.1;
+        }
+        if(pos.h>0){
+            rSpeed *= 1.1;
+        }
+         fr.setPower(rSpeed);
+         fl.setPower(lSpeed);
+         bl.setPower(lSpeed);
+         br.setPower(rSpeed); 
          pos =myOtos.getPosition();
          telemetry.addData("X coordinate", pos.x);
          telemetry.addData("Y coordinate", pos.y);
@@ -421,4 +435,17 @@ public void movement(String move, double speed, double  d, int time){
    }
    
 }
+//a method which assists with correcting error during driving mode(under testing)
+/*public void correcting(String move, speed){
+    if(move == "forward"){
+        while(pos.h<0){
+        fr.setPower(speed);
+          fl.setPower(speed);
+          bl.setPower(speed);
+          br.setPower(speed);
+        }
+    }
+
 }
+}
+*/
