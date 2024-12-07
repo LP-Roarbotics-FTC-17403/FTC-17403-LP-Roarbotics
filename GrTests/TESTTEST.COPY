@@ -67,11 +67,16 @@ public class LP24_AUTO_NOV21_Copy extends LinearOpMode {
     final double LIFT_COLLAPSED = 0 * LIFT_TICKS_PER_MM;
     final double LIFT_SCORING_IN_LOW_BASKET = 0 * LIFT_TICKS_PER_MM;
     final double LIFT_SCORING_IN_HIGH_BASKET = 455 * LIFT_TICKS_PER_MM;
-
+    double flSpeed;
+    double frSpeed;
+    double blSpeed;
+    double brSpeed;
     double liftPosition = LIFT_COLLAPSED;
 
     SparkFunOTOS myOtos;
-
+    configureOtos();
+    SparkFunOTOS.Pose2D pos;
+ElapsedTime timer = new ElapsedTime();
     @Override
     public void runOpMode() {
         myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
@@ -125,19 +130,19 @@ public class LP24_AUTO_NOV21_Copy extends LinearOpMode {
         telemetry.update();
 
         //Initialize timer object
-        ElapsedTime timer = new ElapsedTime();
+        
 
         //Configure OTOS
-        configureOtos();
+        
 
         /* Wait for the game driver to press play */
         waitForStart();
 
         //Initialize OTOS
-        SparkFunOTOS.Pose2D pos;
+        
 
         // Reset the timer
-        timer.reset();
+       
 
         if (opModeIsActive()){
 
@@ -310,29 +315,25 @@ public class LP24_AUTO_NOV21_Copy extends LinearOpMode {
 
 
 //attempting to combine all movements into one big method, move = what to do, speed = how fast, d = distance, time = time before forced stop.
-public void movement(String move, double spd, double  d, int time){
-   //checking for the actual direction and movement
+public void movement(String move, double speed, double  d, int time){
 
-    //creating variables for left and right wheels speed
-    private double speed = spd;
-    private double rSpeed = spd;
-    private double lSpeed = spd;
+    //setting the current speed to the motor power values
+    flSpeed = speed;
+    frSpeed = speed;
+    blSpeed = speed;
+    brSpeed = speed;
     
+   //checking for the actual direction and movement
    if(move == "forward"){
       timer.reset();
       while(pos.y>d || timer.seconds()>time){
         //if the angles does off, one side of the wheel depending on where way robot tilted off, will be increased
         //in power, which then allows for the robot to fix its own angle.
-        if(pos.h<0){
-            lSpeed *= 1.1;
-        }
-        if(pos.h>0){
-            rSpeed *= 1.1;
-        }
-         fr.setPower(rSpeed);
-         fl.setPower(lSpeed);
-         bl.setPower(lSpeed);
-         br.setPower(rSpeed); 
+        
+         fr.setPower(Speed);
+         fl.setPower(Speed);
+         bl.setPower(Speed);
+         br.setPower(Speed); 
          pos =myOtos.getPosition();
          telemetry.addData("X coordinate", pos.x);
          telemetry.addData("Y coordinate", pos.y);
@@ -362,7 +363,7 @@ public void movement(String move, double spd, double  d, int time){
          stopMotion(); 
    }
 
-   if(move == "stRght"){
+   if(move == "stRight"){
       timer.reset();
       while(pos.x>d || timer.seconds()>time){
          fr.setPower(speed);
@@ -423,7 +424,7 @@ public void movement(String move, double spd, double  d, int time){
           fl.setPower(-1*speed);
           bl.setPower(-1*speed);
           br.setPower(speed);
-      pos =myOtos.getPosition();
+          pos =myOtos.getPosition();
          telemetry.addData("X coordinate", pos.x);
          telemetry.addData("Y coordinate", pos.y);
          telemetry.addData("Heading angle", pos.h);
@@ -435,17 +436,69 @@ public void movement(String move, double spd, double  d, int time){
    }
    
 }
-//a method which assists with correcting error during driving mode(under testing)
-/*public void correcting(String move, speed){
-    if(move == "forward"){
-        while(pos.h<0){
-        fr.setPower(speed);
+
+public void forward(speed){
+          fr.setPower(speed);
           fl.setPower(speed);
           bl.setPower(speed);
           br.setPower(speed);
-        }
+}
+public void backward(speed){
+        fr.setPower(-1* speed);
+         fl.setPower(-1*speed);
+         bl.setPower(-1*speed);
+         br.setPower(-1*speed);
+}
+public void stRight(){
+         fr.setPower(speed);
+         fl.setPower(-1*speed);
+         bl.setPower(speed);
+         br.setPower(-1*speed);
+}
+public void stLeft(){
+        fr.setPower(speed);
+        fl.setPower(-1*speed);
+        bl.setPower(-1*speed);
+        br.setPower(speed);
+}
+public void rRight(){
+         fr.setPower(-1*speed);
+          fl.setPower(speed);
+          bl.setPower(speed);
+          br.setPower(-1*speed);
+}
+public void rLeft(){
+        fr.setPower(speed);
+          fl.setPower(-1*speed);
+          bl.setPower(-1*speed);
+          br.setPower(speed);
+}
+public void updatePosition(){
+         pos =myOtos.getPosition();
+         telemetry.addData("X coordinate", pos.x);
+         telemetry.addData("Y coordinate", pos.y);
+         telemetry.addData("Heading angle", pos.h);
+         // Update the telemetry on the driver station
+         telemetry.update();
+}
+//a method which assists with correcting error during driving mode(under testing)(ANGLE, used with any movement besides rotate)
+public void hCorrecting(){
+    if(pos.h>1){
+        flSpeed *= 1.1;
+        blSpeed *= 1.1;
+    }
+    if(pos.h<-1){
+       frSpeed *= 1.1;
+       brSpeed *= 1.1;
     }
 
 }
+//correcting the robot when rotating in the same spot
+public void stillRotateCorrecting(){
+    if(pos.y>0.1){
+        
+    }
 }
-*/
+
+}
+
