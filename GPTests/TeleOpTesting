@@ -389,10 +389,15 @@ public class LP24_RED_TELEOP_NOV13 extends LinearOpMode {
                if(liftPosition > LIFT_BELOW45){
                 liftPosition = LIFT_BELOW45;
                }
-               
-           }
            else{
                armLiftComp = 0;
+           }
+
+        if (armPosition == ARM_SCORE_SAMPLE_IN_LOW) { 
+               leftFrontDrive.setPower(frontLeftPower * 0.25);
+           leftBackDrive.setPower(backLeftPower * 0.25);
+           rightFrontDrive.setPower(frontRightPower * 0.25);
+           rightBackDrive.setPower(backRightPower * 0.25);
            }
            
 
