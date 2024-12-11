@@ -1,0 +1,18 @@
+//variables for calculating motor power for manual arm control
+            double downPower = gamepad1.left_trigger;  // Left trigger for moving down
+            double upPower = gamepad1.right_trigger;   // Right trigger for moving up
+
+            // Calculate the motor power
+            double armPower = upPower - downPower; // Positive for up, negative for down
+
+            // Set the motor power
+            armMotor.setPower(armPower);
+
+            if (gamepad1.start) { // Button A resets encoder
+                armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                telemetry.addData("Encoder", "Reset to Zero");
+                telemetry.update();
+            }
