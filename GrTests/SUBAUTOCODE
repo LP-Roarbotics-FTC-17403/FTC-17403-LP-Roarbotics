@@ -213,7 +213,7 @@ public class COMP_R_AUTO_LT_SUB extends LinearOpMode {
             movement("rLeft", 0.4, 83, 10);
             movement("forward", 0.4, 30, 10);
             
-            movement("stRight",0.4,35,10);
+            movement("stRight",0.4,29,10);
             movement("rRight", 0.4, -170, 10);
             armPosition = ARM_SCORE_SAMPLE_IN_HIGH;
            armMotor.setTargetPosition ((int)armPosition);
