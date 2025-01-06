@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name="COMP_B_AUTO_LT_OB", group="Robot")
 
 
-public class COMP_R_AUTO_LT_OB extends LinearOpMode {
+public class COMP_B_AUTO_LT_OB extends LinearOpMode {
 
     /* Declare OpMode members. */
     public DcMotorEx bl = null, fl = null, fr = null, br = null;

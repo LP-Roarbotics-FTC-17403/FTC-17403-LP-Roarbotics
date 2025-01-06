@@ -15,10 +15,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 
-@Autonomous(name="COMP_B_AUTO_LT_OB", group="Robot")
+@Autonomous
 
 
-public class COMP_R_AUTO_LT_OB extends LinearOpMode {
+public class COMP_B_AUTO_LT_SUB extends LinearOpMode {
 
     /* Declare OpMode members. */
     public DcMotorEx bl = null, fl = null, fr = null, br = null;
@@ -54,7 +54,7 @@ public class COMP_R_AUTO_LT_OB extends LinearOpMode {
     final double INTAKE_DEPOSIT    =  0.5;
 
     /* Variables to store the positions that the wrist should be set to when folding in, or folding out. */
-    final double WRIST_FOLDED_IN   = 0.2; //Wrist folded so that it is tucked into the robot to confirm to 18in sizing rule
+    final double WRIST_FOLDED_IN   = 0.1667; //Wrist folded so that it is tucked into the robot to confirm to 18in sizing rule
     final double WRIST_FOLDED_OUT  = 0.52;
 
 
@@ -88,17 +88,17 @@ public class COMP_R_AUTO_LT_OB extends LinearOpMode {
 
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
+        
+         fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        
-        fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        
+
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -152,13 +152,9 @@ public class COMP_R_AUTO_LT_OB extends LinearOpMode {
             wrist.setPosition(WRIST_FOLDED_IN);
 
             //Raise arm to barrier position
-            liftPosition = 0;
-            liftMotor.setTargetPosition ((int)liftPosition);
-            liftMotor.setVelocity(100);
-            
             armPosition = ARM_CLEAR_BARRIER;
             armMotor.setTargetPosition ((int)armPosition);
-            armMotor.setVelocity(600);
+            armMotor.setVelocity(1500);
             while (armMotor.isBusy() && opModeIsActive()) {
                 telemetry.addData("Arm Variable", armPosition);
                 telemetry.addData("Arm Target Position: ", armMotor.getTargetPosition());
@@ -175,10 +171,9 @@ public class COMP_R_AUTO_LT_OB extends LinearOpMode {
             //Strafe right
            movement("forward",0.2,20,10);
            movement("stRight", 0.2, 5, 10);
-           sleep(500);
            armPosition = ARM_SCORE_SAMPLE_IN_HIGH;
            armMotor.setTargetPosition ((int)armPosition);
-            armMotor.setVelocity(600);
+            armMotor.setVelocity(1500);
            while (armMotor.isBusy() && opModeIsActive()) {
                 telemetry.addData("Arm Variable", armPosition);
                 telemetry.addData("Arm Target Position: ", armMotor.getTargetPosition());
@@ -186,6 +181,7 @@ public class COMP_R_AUTO_LT_OB extends LinearOpMode {
                 telemetry.addData("ArmMotor Current:",armMotor.getCurrent(CurrentUnit.AMPS));
                 telemetry.update();
             }
+            
             movement("forward",0.2,9.5,10);
             
             armPosition = ARM_CLIP;
@@ -199,9 +195,7 @@ public class COMP_R_AUTO_LT_OB extends LinearOpMode {
                 telemetry.addData("ArmMotor Current:",armMotor.getCurrent(CurrentUnit.AMPS));
                 telemetry.update();
             }
-            intake.setPower(INTAKE_OFF);
             sleep(1000);
-            
             armPosition = ARM_DOWNBIT;
             armMotor.setTargetPosition ((int)armPosition);
             armMotor.setVelocity(1500);
@@ -214,43 +208,24 @@ public class COMP_R_AUTO_LT_OB extends LinearOpMode {
                 telemetry.update();
             }
             intake.setPower(INTAKE_OFF);
-            sleep(500);
-            intake.setPower(INTAKE_DEPOSIT);
-            sleep(500);
-            intake.setPower(INTAKE_COLLECT);
-            sleep(500);
-            intake.setPower(INTAKE_DEPOSIT);
-            sleep(500);
-            intake.setPower(INTAKE_OFF);
-            sleep(500);
-            armPosition = ARM_DOWNBIT;
-            armMotor.setTargetPosition ((int)armPosition);
-            armMotor.setVelocity(1500);
-            
-            while (armMotor.isBusy() && opModeIsActive()) {
-                intake.setPower(INTAKE_DEPOSIT);
-                telemetry.addData("Arm Variable", armPosition);
-                telemetry.addData("Arm Target Position: ", armMotor.getTargetPosition());
-                telemetry.addData("Arm Current Position: ", armMotor.getCurrentPosition());
-                telemetry.addData("ArmMotor Current:",armMotor.getCurrent(CurrentUnit.AMPS));
-                telemetry.update();
-            }
-            movement("backward",0.2,-28,10);
-            movement("stRight", 0.5, 37,10);
-           //movement("stRight",0.2,15,10);
-           armPosition = ARM_CLEAR_BARRIER;
-            armMotor.setTargetPosition ((int)armPosition);
-            armMotor.setVelocity(1500);
-            while (armMotor.isBusy() && opModeIsActive()) {
-                intake.setPower(INTAKE_COLLECT);
-                telemetry.addData("Arm Variable", armPosition);
-                telemetry.addData("Arm Target Position: ", armMotor.getTargetPosition());
-                telemetry.addData("Arm Current Position: ", armMotor.getCurrentPosition());
-                telemetry.addData("ArmMotor Current:",armMotor.getCurrent(CurrentUnit.AMPS));
-                telemetry.update();
-            }
-            intake.setPower(INTAKE_OFF);
             sleep(1000);
+            movement("backward",0.2,-10,10);
+            movement("rLeft", 0.4, 83, 10);
+            movement("forward", 0.4, 30, 10);
+            
+            movement("stRight",0.4,29,10);
+            movement("rRight", 0.4, -170, 10);
+            armPosition = ARM_SCORE_SAMPLE_IN_HIGH;
+           armMotor.setTargetPosition ((int)armPosition);
+            armMotor.setVelocity(1500);
+           while (armMotor.isBusy() && opModeIsActive()) {
+                telemetry.addData("Arm Variable", armPosition);
+                telemetry.addData("Arm Target Position: ", armMotor.getTargetPosition());
+                telemetry.addData("Arm Current Position: ", armMotor.getCurrentPosition());
+                telemetry.addData("ArmMotor Current:",armMotor.getCurrent(CurrentUnit.AMPS));
+                telemetry.update();
+            }
+            movement("forward",0.2, 15, 2);
             
         }
     }
@@ -394,7 +369,7 @@ public void movement(String move, double speed, double  d, int time){
 
    if(move == "rRight"){
       timer.reset();
-      while(pos.h<d || timer.seconds()>time){
+      while(pos.h>d || timer.seconds()>time){
           fr.setPower(-1*speed);
           fl.setPower(speed);
           bl.setPower(speed);
@@ -412,7 +387,7 @@ public void movement(String move, double speed, double  d, int time){
 
    if(move == "rLeft"){
       timer.reset();
-      while(pos.h>d || timer.seconds()>time){
+      while(pos.h<d || timer.seconds()>time){
           fr.setPower(speed);
           fl.setPower(-1*speed);
           bl.setPower(-1*speed);
