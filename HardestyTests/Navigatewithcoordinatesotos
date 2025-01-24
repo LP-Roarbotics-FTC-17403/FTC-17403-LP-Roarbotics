@@ -1,0 +1,143 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+
+@Autonomous(name = "Navigate to Coordinates using OTOS", group = "Examples")
+public class Navigatewithcoordinatesotos extends LinearOpMode {
+
+    SparkFunOTOS myOtos;
+    DcMotorEx m1, m2, m3, m4;
+    SparkFunOTOS.Pose2D pos;
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+        myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
+
+        m1 = hardwareMap.get(DcMotorEx.class, "back_left_motor");
+        m2 = hardwareMap.get(DcMotorEx.class, "front_left_motor");
+        m3 = hardwareMap.get(DcMotorEx.class, "front_right_motor");
+        m4 = hardwareMap.get(DcMotorEx.class, "back_right_motor");
+        m1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        m2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        m3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        m4.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        m1.setDirection(DcMotor.Direction.REVERSE);
+        m2.setDirection(DcMotor.Direction.REVERSE);
+
+        pos = myOtos.getPosition();
+
+        configureOtos();
+
+        telemetry.addData("Press Start When Ready", "");
+
+        waitForStart();
+
+        // Step 1: Use OTOS to navigate to the general area
+        telemetry.addLine("Navigating to target using OTOS...");
+        telemetry.update();
+
+        double targetX = 10;
+        double targetY = 14;
+        double targetH = -45;
+        moveToTargetUsingOTOS(targetX, targetY, targetH);
+    }
+
+    private void moveToTargetUsingOTOS(double targetX, double targetY, double targetH) {
+        SparkFunOTOS.Pose2D currentPosition = myOtos.getPosition();
+
+        while (opModeIsActive() &&
+                (Math.abs(currentPosition.x - targetX) > 0.05 ||
+                        Math.abs(currentPosition.y - targetY) > 0.05 ||
+                        Math.abs(currentPosition.h - targetH) > 1.0)) { // Heading threshold in degrees
+
+            // Proportional control for X, Y, and Heading
+            double xPower = -(targetX - currentPosition.y) * 0.2;
+            double yPower = (targetY - currentPosition.x) * 0.2;
+            double headingError = targetH - currentPosition.h;
+            double turnPower = headingError * 0.1; // Adjust proportional gain for turning
+
+            // Clamp the power values
+            xPower = clamp(xPower, -1, 1);
+            yPower = clamp(yPower, -1, 1);
+            turnPower = clamp(turnPower, -0.5, 0.5); // Limit turn power for smooth adjustments
+
+            // Apply motor power, incorporating turnPower for heading adjustments
+            driveMotorsWithTurn(yPower, xPower, turnPower);
+
+            // Update current position from OTOS
+            currentPosition = myOtos.getPosition();
+
+            // Telemetry for debugging
+            telemetry.addData("Current OTOS X", currentPosition.y);
+            telemetry.addData("Current OTOS Y", currentPosition.x);
+            telemetry.addData("Current Heading", currentPosition.h);
+            telemetry.addData("Target Heading", targetH);
+            telemetry.addData("Heading Error", headingError);
+            telemetry.update();
+        }
+
+        stopMotors();
+    }
+
+    private void driveMotorsWithTurn(double forwardPower, double strafePower, double turnPower) {
+        // Example drivetrain power logic, adding turnPower for rotation
+        double frontLeft = forwardPower + strafePower + turnPower;
+        double frontRight = forwardPower - strafePower - turnPower;
+        double backLeft = forwardPower - strafePower + turnPower;
+        double backRight = forwardPower + strafePower - turnPower;
+
+        m1.setPower(backLeft);
+        m2.setPower(frontLeft);
+        m3.setPower(frontRight);
+        m4.setPower(backRight);
+    }
+
+    private void stopMotors() {
+        m1.setPower(0);
+        m2.setPower(0);
+        m3.setPower(0);
+        m4.setPower(0);
+    }
+    // Utility method for clamping
+    private double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    private void configureOtos() {
+        telemetry.addLine("Configuring OTOS...");
+        telemetry.update();
+
+        myOtos.setLinearUnit(DistanceUnit.INCH);
+
+        myOtos.setAngularUnit(AngleUnit.DEGREES);
+
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 0, 0);
+        myOtos.setOffset(offset);
+
+        myOtos.setLinearScalar(1.0);
+        myOtos.setAngularScalar(1.0);
+
+        myOtos.calibrateImu();
+
+        myOtos.resetTracking();
+
+        SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
+        myOtos.setPosition(currentPosition);
+
+        SparkFunOTOS.Version hwVersion = new SparkFunOTOS.Version();
+        SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();
+        myOtos.getVersionInfo(hwVersion, fwVersion);
+
+        telemetry.addLine("OTOS configured! Press start to get position data!");
+        telemetry.addLine();
+        telemetry.addLine(String.format("OTOS Hardware Version: v%d.%d", hwVersion.major, hwVersion.minor));
+        telemetry.addLine(String.format("OTOS Firmware Version: v%d.%d", fwVersion.major, fwVersion.minor));
+        telemetry.update();
+    }
+}
