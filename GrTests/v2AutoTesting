@@ -1,3 +1,4 @@
+//a run to target position drive mode with otos, includes proportional control and position correction
 private void moveToTargetUsingOTOS(double targetX, double targetY, double targetH) {
     SparkFunOTOS.Pose2D currentPosition = myOtos.getPosition();
 
@@ -23,7 +24,7 @@ private void moveToTargetUsingOTOS(double targetX, double targetY, double target
 
     stopMotors();
 }
-
+//setting the power of drive motors, through the calculation done in the run to target position drive mode
 private void driveMotors(double forwardPower, double strafePower, double rotatePower) {
     // Example drivetrain power logic
     double frontLeft = forwardPower + strafePower + rotatePower;
@@ -36,14 +37,14 @@ private void driveMotors(double forwardPower, double strafePower, double rotateP
     m3.setPower(frontRight);
     m4.setPower(backRight);
 }
-
+//stopping all motors, setting all to 0
 private void stopMotors() {
     m1.setPower(0);
     m2.setPower(0);
     m3.setPower(0);
     m4.setPower(0);
 }
-
+//controlling the arm, making sure robot isn't moving while this is happening
 private void armMotorOnly(double speed, double location){
     armMotor.setTargetPosition ((int)location);
     armMotor.setVelocity(speed);
@@ -55,11 +56,15 @@ private void armMotorOnly(double speed, double location){
       telemetry.update();
     }
 }
-private void armMotorWhileMoving(double speed, double location, double x, double y){
-    speed= armMotor.getCurrentPosition
+//attempting to have the robot move arm while driving, including a proportional control on the speed of arm
+private void armMotorWhileMoving(double speed, double location, double x, double y, double h){
+    double p = speed +(Math.abs(armMotor.getTargetPosition-armMotor.getCurrentPosition)*2);
     armMotor.setTargetPosition ((int)location);
-    armMotor.setVelocity(speed);
+    armMotor.setVelocity(p);
     while ((armMotor.isBusy() || fr.isBusy() || fl.isBusy()) && opModeIsActive()) {
+      p = speed +(Math.abs(armMotor.getTargetPosition-armMotor.getCurrentPosition)*2);
+      armMotor.setVelocity(p);
+      moveToTargetUsingOTOS(x, y, h);
       telemetry.addData("Arm Variable", armPosition);
       telemetry.addData("Arm Target Position: ", armMotor.getTargetPosition());
       telemetry.addData("Arm Current Position: ", armMotor.getCurrentPosition());
@@ -67,17 +72,17 @@ private void armMotorWhileMoving(double speed, double location, double x, double
       telemetry.update();
     }
 }
-
+//simply setting the power and target position of the arm, letting it flow through the code itself
 private void armMotor(speed, location){
     armMotor.setTargetPosition ((int)location);
     armMotor.setVelocity(speed);
 }
-
+//allowing the sliders to flow through the code, just like the arm motor
 private void liftMotor(speed, location){
     liftMotor.setTargetPosition ((int)location);
     liftMotor.setVelocity(speed);
 }
-
+//letting only the slider move
 private void liftMotorOnly(speed, location){
     liftMotor.setTargetPosition ((int)location);
     liftMotor.setVelocity(speed);
@@ -89,7 +94,7 @@ private void liftMotorOnly(speed, location){
       telemetry.update();
     }
 }
-
+//being able to clamp the values into the desired minimum and maximum, so it doesn't exceed limit
 private double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
 }  
