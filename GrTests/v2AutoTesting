@@ -12,8 +12,10 @@ private void moveToTargetUsingOTOS(double targetX, double targetY, double target
         yPower = clamp(yPower, -1, 1);
         hPower = clamp(hPower, -1, 1);
 
+        double xRotate = (xPower* Math.cos(currentPosition.h)) - (yPower * (Math.sin(currentPosition.h)));
+        double yRotate = (xPower* Math.sin(currentPosition.h)) + (yPower * (Math.cos(currentPosition.h)));
         // Apply motor power (example, adjust based on your drivetrain)
-        driveMotors(yPower, xPower, hPower);
+        driveMotors(yRotate, xRotate, hPower);
 
         currentPosition = myOtos.getPosition();
         telemetry.addData("Current OTOS X", currentPosition.x);
