@@ -1,0 +1,83 @@
+private void moveToTargetUsingOTOS(double targetX, double targetY, double targetH) {
+    SparkFunOTOS.Pose2D currentPosition = myOtos.getPosition();
+
+    while (opModeIsActive() && (Math.abs(currentPosition.x - targetX) > 0.1 || Math.abs(currentPosition.y - targetY) > 0.1 || Math.abs(currentPosition.h - targetH) > 0.1)) {
+        double xPower = (targetX - currentPosition.x) * 0.2; // Proportional control
+        double yPower = (targetY - currentPosition.y) * 0.2;
+        double hPower = (targetH - currentPosition.h) * 0.2; 
+        
+        //Clamps the values between -1 and 1, see utility method below using Math.max and Math.min
+        xPower = clamp(xPower, -1, 1);
+        yPower = clamp(yPower, -1, 1);
+        hPower = clamp(hPower, -1, 1);
+
+        // Apply motor power (example, adjust based on your drivetrain)
+        driveMotors(yPower, xPower, hPower);
+
+        currentPosition = myOtos.getPosition();
+        telemetry.addData("Current OTOS X", currentPosition.x);
+        telemetry.addData("Current OTOS Y", currentPosition.y);
+        telemetry.addData("Current OTOS H", currentPosition.h);
+        telemetry.update();
+    }
+
+    stopMotors();
+}
+
+private void driveMotors(double forwardPower, double strafePower, double rotatePower) {
+    // Example drivetrain power logic
+    double frontLeft = forwardPower + strafePower + rotatePower;
+    double frontRight = forwardPower - strafePower - rotatePower;
+    double backLeft = forwardPower - strafePower + rotatePower;
+    double backRight = forwardPower + strafePower - rotatePower;
+
+    m1.setPower(backLeft);
+    m2.setPower(frontLeft);
+    m3.setPower(frontRight);
+    m4.setPower(backRight);
+}
+
+private void stopMotors() {
+    m1.setPower(0);
+    m2.setPower(0);
+    m3.setPower(0);
+    m4.setPower(0);
+}
+
+private void armMotorOnly(double speed, double location){
+    armMotor.setTargetPosition ((int)location);
+    armMotor.setVelocity(speed);
+    while (armMotor.isBusy() && opModeIsActive()) {
+      telemetry.addData("Arm Variable", armPosition);
+      telemetry.addData("Arm Target Position: ", armMotor.getTargetPosition());
+      telemetry.addData("Arm Current Position: ", armMotor.getCurrentPosition());
+      telemetry.addData("ArmMotor Current:",armMotor.getCurrent(CurrentUnit.AMPS));
+      telemetry.update();
+    }
+}
+
+private void armMotor(speed, location){
+    armMotor.setTargetPosition ((int)location);
+    armMotor.setVelocity(speed);
+}
+
+private void liftMotor(speed, location){
+    liftMotor.setTargetPosition ((int)location);
+    liftMotor.setVelocity(speed);
+}
+
+private void liftMotorOnly(speed, location){
+    liftMotor.setTargetPosition ((int)location);
+    liftMotor.setVelocity(speed);
+    while (liftMotor.isBusy() && opModeIsActive()) {
+      telemetry.addData("Lift Variable", armPosition);
+      telemetry.addData("Lift Target Position: ", liftMotor.getTargetPosition());
+      telemetry.addData("Lift Current Position: ", liftMotor.getCurrentPosition());
+      telemetry.addData("LiftMotor Current:",liftMotor.getCurrent(CurrentUnit.AMPS));
+      telemetry.update();
+    }
+}
+
+private double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
+}   
