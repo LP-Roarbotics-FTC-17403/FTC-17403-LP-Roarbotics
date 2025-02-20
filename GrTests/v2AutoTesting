@@ -94,6 +94,22 @@ private void liftMotorOnly(speed, location){
       telemetry.update();
     }
 }
+//attempting to have the robot move lift while driving, including a proportional control on the speed of lift
+private void liftMotorWhileMoving(double speed, double location, double x, double y, double h){
+    double p = speed +(Math.abs(liftMotor.getTargetPosition-liftMotor.getCurrentPosition)*2);
+    liftMotor.setTargetPosition ((int)location);
+    liftMotor.setVelocity(p);
+    while ((liftMotor.isBusy() || fr.isBusy() || fl.isBusy()) && opModeIsActive()) {
+      p = speed +(Math.abs(liftMotor.getTargetPosition-liftMotor.getCurrentPosition)*2);
+      liftMotor.setVelocity(p);
+      moveToTargetUsingOTOS(x, y, h);
+      telemetry.addData("Lift Variable", liftPosition);
+      telemetry.addData("Lift Target Position: ", liftMotor.getTargetPosition());
+      telemetry.addData("Lift Current Position: ", liftMotor.getCurrentPosition());
+      telemetry.addData("liftMotor Current:",liftMotor.getCurrent(CurrentUnit.AMPS));
+      telemetry.update();
+    }
+}
 //being able to clamp the values into the desired minimum and maximum, so it doesn't exceed limit
 private double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
