@@ -55,6 +55,18 @@ private void armMotorOnly(double speed, double location){
       telemetry.update();
     }
 }
+private void armMotorWhileMoving(double speed, double location, double x, double y){
+    speed= armMotor.getCurrentPosition
+    armMotor.setTargetPosition ((int)location);
+    armMotor.setVelocity(speed);
+    while ((armMotor.isBusy() || fr.isBusy() || fl.isBusy()) && opModeIsActive()) {
+      telemetry.addData("Arm Variable", armPosition);
+      telemetry.addData("Arm Target Position: ", armMotor.getTargetPosition());
+      telemetry.addData("Arm Current Position: ", armMotor.getCurrentPosition());
+      telemetry.addData("ArmMotor Current:",armMotor.getCurrent(CurrentUnit.AMPS));
+      telemetry.update();
+    }
+}
 
 private void armMotor(speed, location){
     armMotor.setTargetPosition ((int)location);
@@ -80,4 +92,4 @@ private void liftMotorOnly(speed, location){
 
 private double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
-}   
+}  
