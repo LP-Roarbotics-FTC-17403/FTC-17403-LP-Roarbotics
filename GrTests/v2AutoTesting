@@ -129,3 +129,17 @@ private double anglewrap(double radians){
     }
 return radians;
 }
+private void armStretch(double target){
+        liftMotor.setVelocity(0);
+        armMotor.setVelocity(1000);
+        liftMotor.setTargetPosition ((int)target);
+    while(Math.abs(liftMotor.getCurrentPosition()-target) > 0.1){
+        double liftPower = (Math.abs(liftMotor.getCurrentPosition()-target))*7;
+        liftPower = clamp(liftPower, 0, 2500);
+        liftMotor.setVelocity(liftPower);
+        armPosition = liftMotor.getCurrentPosition()* XXXX;
+        armMotor.setTargetPosition((int)armPosition);
+        
+        
+    }
+}
