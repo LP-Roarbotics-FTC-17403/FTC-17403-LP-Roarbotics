@@ -7,13 +7,16 @@ private void moveToTargetUsingOTOS(double targetX, double targetY, double target
         double yPower = (targetY - currentPosition.y) * 0.2;
         double hPower = (targetH - currentPosition.h) * 0.2; 
         
-        //Clamps the values between -1 and 1, see utility method below using Math.max and Math.min
-        xPower = clamp(xPower, -1, 1);
-        yPower = clamp(yPower, -1, 1);
+       double hRad = Math.toRadians(angleWrap(currentPosition.h));
+
+        double xRotate = (xPower* Math.cos(hRad)) - (yPower * (Math.sin(hRad)));
+        double yRotate = (xPower* Math.sin(hRad)) + (yPower * (Math.cos(hRad)));
+
+         //Clamps the values between -1 and 1, see utility method below using Math.max and Math.min
+        xRotate = clamp(xPower, -1, 1);
+        yRotate = clamp(yPower, -1, 1);
         hPower = clamp(hPower, -1, 1);
 
-        double xRotate = (xPower* Math.cos(currentPosition.h)) - (yPower * (Math.sin(currentPosition.h)));
-        double yRotate = (xPower* Math.sin(currentPosition.h)) + (yPower * (Math.cos(currentPosition.h)));
         // Apply motor power (example, adjust based on your drivetrain)
         driveMotors(yRotate, xRotate, hPower);
 
@@ -116,3 +119,13 @@ private void liftMotorWhileMoving(double speed, double location, double x, doubl
 private double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
 }  
+
+private double anglewrap(double radians){
+    while(radians > Math.Pi){
+        radians-=2*Math.Pi;
+    }
+    while(radians < -Math.Pi){
+            radians+=2*Math.Pi;
+    }
+return radians;
+}
