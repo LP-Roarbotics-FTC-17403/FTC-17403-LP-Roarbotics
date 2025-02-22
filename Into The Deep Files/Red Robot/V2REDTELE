@@ -104,7 +104,7 @@ public class TESTR_V2_TELE extends LinearOpMode {
     as far from the starting position, decrease it. */
 
     final double ARM_COLLAPSED_INTO_ROBOT  = 0;
-    final double ARM_COLLECT               = 8 * ARM_TICKS_PER_DEGREE;
+    final double ARM_COLLECT               = 7 * ARM_TICKS_PER_DEGREE;
     final double ARM_CLEAR_BARRIER         = 15 * ARM_TICKS_PER_DEGREE;
     final double ARM_SCORE_SPECIMEN        = 50 * ARM_TICKS_PER_DEGREE;
     final double ARM_SCORE_SAMPLE_IN_LOW   = 95 * ARM_TICKS_PER_DEGREE;
@@ -459,7 +459,7 @@ public class TESTR_V2_TELE extends LinearOpMode {
 
            liftMotor.setTargetPosition((int) (liftPosition));
 
-           ((DcMotorEx) liftMotor).setVelocity(2400);
+           ((DcMotorEx) liftMotor).setVelocity(4800);
            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
@@ -500,6 +500,8 @@ public class TESTR_V2_TELE extends LinearOpMode {
            telemetry.addData("Lift Target Position",liftMotor.getTargetPosition());
            telemetry.addData("lift current position", liftMotor.getCurrentPosition());
            telemetry.addData("liftMotor Current:",((DcMotorEx) liftMotor).getCurrent(CurrentUnit.AMPS));
+           //telemetry.addData("Target Velocity", 4800);
+            //telemetry.addData("Actual Velocity", liftMotor.getVelocity());
            telemetry.update();
            
             telemetry.addData("Light Detected",((OpticalDistanceSensor) sensorColor).getLightDetected());
@@ -530,4 +532,5 @@ public class TESTR_V2_TELE extends LinearOpMode {
     }
 }
 }
+
 
