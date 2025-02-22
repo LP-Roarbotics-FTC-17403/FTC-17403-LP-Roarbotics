@@ -48,6 +48,8 @@ public class COMP_R_AUTO2_SUB extends LinearOpMode {
     final double ARM_WINCH_ROBOT           = 10  * ARM_TICKS_PER_DEGREE;
     final double ARM_DOWNBIT               = 65 * ARM_TICKS_PER_DEGREE;
     final double ARM_CLIP               = 51 * ARM_TICKS_PER_DEGREE;
+    final double HORIZONTAL_ARM               = 22 * ARM_TICKS_PER_DEGREE;
+    final double firstChomp = 19 * ARM_TICKS_PER_DEGREE;
     /* Variables to store the speed the intake servo should be set at to intake, and deposit game elements. */
     final double CLOSE    = 0.2;
     
@@ -67,8 +69,11 @@ public class COMP_R_AUTO2_SUB extends LinearOpMode {
     /* Variables that are used to set the arm to a specific position */
     final double LIFT_COLLAPSED = 0 * LIFT_TICKS_PER_MM;
     final double LIFT_SCORING_IN_LOW_BASKET = 0 * LIFT_TICKS_PER_MM;
-    final double LIFT_SCORING_IN_HIGH_BASKET = 660 * LIFT_TICKS_PER_MM;
-    final double LIMIT = 400 * LIFT_TICKS_PER_MM;
+    final double LIFT_SCORING_IN_HIGH_BASKET = 700 * LIFT_TICKS_PER_MM;
+    final double LIMIT = 410 * LIFT_TICKS_PER_MM;
+    final double firstSample = 390 * LIFT_TICKS_PER_MM;
+    final double secondSample = 390 * LIFT_TICKS_PER_MM;
+    
 
     double liftPosition = LIFT_COLLAPSED;
 
@@ -174,7 +179,7 @@ public class COMP_R_AUTO2_SUB extends LinearOpMode {
             brakePoint();
             currentPosition = myOtos.getPosition();
             
-            while(currentPosition.h >-140 && opModeIsActive()){
+            while(currentPosition.h >-135 && opModeIsActive()){
                 fr.setPower(-0.2);
               fl.setPower(0.2);
               bl.setPower(0.2);
@@ -185,9 +190,78 @@ public class COMP_R_AUTO2_SUB extends LinearOpMode {
             brakePoint();
             armMotorOnly(1500,ARM_CLEAR_BARRIER);
             brakePoint();
-            liftMotorOnly(1500, LIMIT);
+            grabSample(firstSample);
             brakePoint();
+            chomp(firstChomp);
+            brakePoint();
+            grabSample(0);
+            brakePoint();
+            while(currentPosition.h <0 && opModeIsActive()){
+                fr.setPower(0.2);
+              fl.setPower(-0.2);
+              bl.setPower(-0.2);
+              br.setPower(0.2);
+              currentPosition = myOtos.getPosition();
+            }
+            stopMotion();
             
+            armMotorOnly(1500, ARM_SCORE_SAMPLE_IN_LOW);
+            sleep(1000);
+            liftMotorOnly(1500, LIFT_SCORING_IN_HIGH_BASKET);
+            
+            sleep(1000);
+            
+            
+            claw.setPosition(OPEN);
+            sleep(1000);
+            
+            liftMotorOnly(1500, 0);
+            
+            
+            armMotorOnly(1500, ARM_CLEAR_BARRIER);
+            
+            currentPosition = myOtos.getPosition();
+            
+            while(currentPosition.h >-114 && opModeIsActive()){
+                fr.setPower(-0.2);
+              fl.setPower(0.2);
+              bl.setPower(0.2);
+              br.setPower(-0.2);
+              currentPosition = myOtos.getPosition();
+            }
+            stopMotion();
+            brakePoint();
+            armMotorOnly(1500,ARM_CLEAR_BARRIER);
+            brakePoint();
+            grabSample(secondSample);
+            brakePoint();
+            chomp(firstChomp);
+            brakePoint();
+            grabSample(0);
+            brakePoint();
+            while(currentPosition.h <0 && opModeIsActive()){
+                fr.setPower(0.2);
+              fl.setPower(-0.2);
+              bl.setPower(-0.2);
+              br.setPower(0.2);
+              currentPosition = myOtos.getPosition();
+            }
+            stopMotion();
+            
+            armMotorOnly(1500, ARM_SCORE_SAMPLE_IN_LOW);
+            sleep(1000);
+            liftMotorOnly(1500, LIFT_SCORING_IN_HIGH_BASKET);
+            
+            sleep(1000);
+            
+            
+            claw.setPosition(OPEN);
+            sleep(1000);
+            
+            liftMotorOnly(1500, 0);
+            
+            
+            armMotorOnly(1500, ARM_CLEAR_BARRIER);
             
             
         }
@@ -358,9 +432,48 @@ private void brakePoint(){
                 telemetry.addData("Arm Current Position: ", armMotor.getCurrentPosition());
                 telemetry.addData("Lift Current Position: ", liftMotor.getCurrentPosition());
                 telemetry.update();
+               
             }
 }
+
+private void armStretch(double target){
+        liftMotor.setVelocity(0);
+        armMotor.setVelocity(1500);
+        liftMotor.setTargetPosition ((int)target);
+    while(Math.abs(liftMotor.getCurrentPosition()-target) > 1 && opModeIsActive()){
+        double liftPower = (Math.abs(liftMotor.getCurrentPosition()-target))*4;
+        liftPower = clamp(liftPower, 0, 2500);
+        liftMotor.setVelocity(liftPower);
+        double armComp = liftMotor.getCurrentPosition()* 0.35;
+       
+        armMotor.setTargetPosition((int)(armPosition + armComp));
+        armMotor.setVelocity(2000);
+        
+        
+        
+        
+    }
+}
+private double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
+}  
+
+
+private void grabSample(double targetPosition){
+    armMotor.setTargetPosition((int)HORIZONTAL_ARM);
+    liftMotor.setTargetPosition((int)targetPosition);
+    armMotor.setVelocity(2000);
+    while(Math.abs(liftMotor.getCurrentPosition()-targetPosition) > 1 && opModeIsActive()){
+        double liftPower = (Math.abs(liftMotor.getCurrentPosition()-targetPosition))*4;
+        liftPower = clamp(liftPower, 0, 2500);
+        liftMotor.setVelocity(liftPower);
+    }
 }
 
-
-
+private void chomp(double targetArm){
+    armMotor.setTargetPosition((int)targetArm);
+    armMotor.setVelocity(1000);
+    sleep(1000);
+    claw.setPosition(CLOSE);
+}
+}
