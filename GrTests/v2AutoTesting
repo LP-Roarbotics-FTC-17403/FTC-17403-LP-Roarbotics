@@ -33,7 +33,7 @@ private void moveToTargetUsingOTOS(double targetX, double targetY, double target
 private void moveToTargetAngleUsingOTOS(double targetH) {
     SparkFunOTOS.Pose2D currentPosition = myOtos.getPosition();
 
-    while (opModeIsActive() && (Math.abs(currentPosition.h - targetH) > 0.1)) {
+    if (opModeIsActive() && (Math.abs(currentPosition.h - targetH) > 0.1)) {
         // Proportional control
         double hPower = (targetH - currentPosition.h) * 0.2; 
 
