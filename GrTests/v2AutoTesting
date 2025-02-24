@@ -102,9 +102,12 @@ private void armMotorWhileMoving(double speed, double location, double x, double
     }
 }
 //simply setting the power and target position of the arm, letting it flow through the code itself
-private void armMotor(speed, location){
-    armMotor.setTargetPosition ((int)location);
-    armMotor.setVelocity(speed);
+private void armMotor(speed, targetEncoder){
+    if((Math.abs(armMotor.getCurrentPosition)-targetEncoder)>1)()
+        
+        armMotor.setTargetPosition ((int)targetEncoder);
+        armMotor.setVelocity(speed);
+    }
 }
 //allowing the sliders to flow through the code, just like the arm motor
 private void liftMotor(speed, location){
