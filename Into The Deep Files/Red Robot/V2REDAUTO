@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous
 
 
-public class COMP_R_AUTO2_SUB extends LinearOpMode {
+public class COMP_R_AUTO2_SUB_Copy extends LinearOpMode {
 
     /* Declare OpMode members. */
     public DcMotorEx bl = null, fl = null, fr = null, br = null;
@@ -164,101 +164,89 @@ public class COMP_R_AUTO2_SUB extends LinearOpMode {
             
             armMotorOnly(1500, ARM_SCORE_SAMPLE_IN_LOW);
             sleep(1000);
-            liftMotorOnly(1500, LIFT_SCORING_IN_HIGH_BASKET);
+            while(opModeIsActive() && liftMotor.getCurrentPosition() < LIFT_SCORING_IN_HIGH_BASKET-10){
+                liftMotor(LIFT_SCORING_IN_HIGH_BASKET);
+            }
             
-            sleep(1000);
+            
             
             
             claw.setPosition(OPEN);
-            sleep(1000);
+            sleep(500);
             
-            liftMotorOnly(1500, 0);
+            while(opModeIsActive() && liftMotor.getCurrentPosition() > 30){
+                liftMotor(0);
+            }
             
             
             armMotorOnly(1500, ARM_CLEAR_BARRIER);
-            brakePoint();
+            //brakePoint();
             currentPosition = myOtos.getPosition();
-            
-            while(currentPosition.h >-135 && opModeIsActive()){
-                fr.setPower(-0.2);
-              fl.setPower(0.2);
-              bl.setPower(0.2);
-              br.setPower(-0.2);
-              currentPosition = myOtos.getPosition();
+            while(opModeIsActive() && (Math.abs(currentPosition.h - -140) > 0.2)){
+                moveToTargetAngleUsingOTOS(-140);
             }
             stopMotion();
-            brakePoint();
+            //brakePoint();
             armMotorOnly(1500,ARM_CLEAR_BARRIER);
-            brakePoint();
+            //brakePoint();
             grabSample(firstSample);
-            brakePoint();
+            //brakePoint();
             chomp(firstChomp);
-            brakePoint();
+            //brakePoint();
             grabSample(0);
-            brakePoint();
-            while(currentPosition.h <0 && opModeIsActive()){
-                fr.setPower(0.2);
-              fl.setPower(-0.2);
-              bl.setPower(-0.2);
-              br.setPower(0.2);
-              currentPosition = myOtos.getPosition();
+            //brakePoint();
+            currentPosition = myOtos.getPosition();
+            while(opModeIsActive() && (Math.abs(currentPosition.h - 0) > 0.2)){
+                moveToTargetAngleUsingOTOS(0);
             }
             stopMotion();
-            
             armMotorOnly(1500, ARM_SCORE_SAMPLE_IN_LOW);
-            sleep(1000);
-            liftMotorOnly(1500, LIFT_SCORING_IN_HIGH_BASKET);
-            
-            sleep(1000);
+            while(opModeIsActive() && liftMotor.getCurrentPosition() < LIFT_SCORING_IN_HIGH_BASKET -10){
+                liftMotor(LIFT_SCORING_IN_HIGH_BASKET);
+            }
             
             
             claw.setPosition(OPEN);
-            sleep(1000);
+            sleep(500);
             
-            liftMotorOnly(1500, 0);
+            while(opModeIsActive() && liftMotor.getCurrentPosition() > 30){
+                liftMotor(0);
+            }
             
             
             armMotorOnly(1500, ARM_CLEAR_BARRIER);
             
             currentPosition = myOtos.getPosition();
-            
-            while(currentPosition.h >-114 && opModeIsActive()){
-                fr.setPower(-0.2);
-              fl.setPower(0.2);
-              bl.setPower(0.2);
-              br.setPower(-0.2);
-              currentPosition = myOtos.getPosition();
+            while(opModeIsActive() && (Math.abs(currentPosition.h - -118) > 0.2)){
+                moveToTargetAngleUsingOTOS(-118);
             }
             stopMotion();
-            brakePoint();
+            //brakePoint();
             armMotorOnly(1500,ARM_CLEAR_BARRIER);
-            brakePoint();
+            //brakePoint();
             grabSample(secondSample);
-            brakePoint();
+            //brakePoint();
             chomp(firstChomp);
-            brakePoint();
+            //brakePoint();
             grabSample(0);
-            brakePoint();
-            while(currentPosition.h <0 && opModeIsActive()){
-                fr.setPower(0.2);
-              fl.setPower(-0.2);
-              bl.setPower(-0.2);
-              br.setPower(0.2);
-              currentPosition = myOtos.getPosition();
+            //brakePoint();
+            currentPosition = myOtos.getPosition();
+            while(opModeIsActive() && (Math.abs(currentPosition.h - 0) > 0.2)){
+                moveToTargetAngleUsingOTOS(0);
             }
             stopMotion();
-            
             armMotorOnly(1500, ARM_SCORE_SAMPLE_IN_LOW);
-            sleep(1000);
-            liftMotorOnly(1500, LIFT_SCORING_IN_HIGH_BASKET);
-            
-            sleep(1000);
+            while(opModeIsActive() && liftMotor.getCurrentPosition() < LIFT_SCORING_IN_HIGH_BASKET-10){
+                liftMotor(LIFT_SCORING_IN_HIGH_BASKET);
+            }
             
             
             claw.setPosition(OPEN);
-            sleep(1000);
+            sleep(500);
             
-            liftMotorOnly(1500, 0);
+            while(opModeIsActive() && liftMotor.getCurrentPosition() > 30){
+                liftMotor(0);
+            }
             
             
             armMotorOnly(1500, ARM_CLEAR_BARRIER);
@@ -355,6 +343,31 @@ private void moveToTargetUsingOTOS(double targetX, double targetY) {
     stopMotion();
 }
 
+//a run to position for angles while in same spot
+private void moveToTargetAngleUsingOTOS(double targetH) {
+    currentPosition = myOtos.getPosition();
+
+    if (opModeIsActive() && (Math.abs(currentPosition.h - targetH) > 0.1)) {
+        // Proportional control
+        double hPower = (targetH - currentPosition.h) * 0.01;
+
+         //Clamps the values between -1 and 1, see utility method below using Math.max and Math.min
+        hPower = clamp(hPower, -1, 1);
+
+        // Apply motor power (example, adjust based on your drivetrain)
+        //zeros for x and y due to stable position
+        angleDriveMotors(hPower);
+
+        currentPosition = myOtos.getPosition();
+        telemetry.addData("Current OTOS X", currentPosition.x);
+        telemetry.addData("Current OTOS Y", currentPosition.y);
+        telemetry.addData("Current OTOS H", currentPosition.h);
+        telemetry.update();
+    }else{
+
+        stopMotion();
+    }
+}
 
 
 private void driveMotors(double forwardPower, double strafePower) {
@@ -363,6 +376,18 @@ private void driveMotors(double forwardPower, double strafePower) {
     double frontRight = forwardPower - strafePower;
     double backLeft = forwardPower - strafePower;
     double backRight = forwardPower + strafePower;
+
+    bl.setPower(backLeft);
+    fl.setPower(frontLeft);
+    fr.setPower(frontRight);
+    br.setPower(backRight);
+}
+private void angleDriveMotors(double rotatePower) {
+    // Example drivetrain power logic
+    double frontLeft = -1*rotatePower;
+    double frontRight = rotatePower;
+    double backLeft = -1*rotatePower;
+    double backRight = rotatePower;
 
     bl.setPower(backLeft);
     fl.setPower(frontLeft);
@@ -463,8 +488,8 @@ private void grabSample(double targetPosition){
     armMotor.setTargetPosition((int)HORIZONTAL_ARM);
     liftMotor.setTargetPosition((int)targetPosition);
     armMotor.setVelocity(2000);
-    while(Math.abs(liftMotor.getCurrentPosition()-targetPosition) > 1 && opModeIsActive()){
-        double liftPower = (Math.abs(liftMotor.getCurrentPosition()-targetPosition))*4;
+    while(Math.abs(liftMotor.getCurrentPosition()-targetPosition) > 20 && opModeIsActive()){
+        double liftPower = (Math.abs(liftMotor.getCurrentPosition()-targetPosition))*5;
         liftPower = clamp(liftPower, 0, 2500);
         liftMotor.setVelocity(liftPower);
     }
@@ -475,5 +500,19 @@ private void chomp(double targetArm){
     armMotor.setVelocity(1000);
     sleep(1000);
     claw.setPosition(CLOSE);
+}
+private void liftMotor(double targetEncoder){
+    if(Math.abs(liftMotor.getCurrentPosition()-targetEncoder)>1){
+        double speed = Math.abs(liftMotor.getCurrentPosition()-targetEncoder) * 3; //value can be adjustable based on how fast you want the arm.
+        clamp(speed, 0, 2500); // ensuring the speed doesn't go past 2500
+        liftMotor.setTargetPosition ((int)targetEncoder);
+        liftMotor.setVelocity(speed);
+        
+    }
+    telemetry.addData("Lift Variable", armPosition);
+      telemetry.addData("Lift Target Position: ", liftMotor.getTargetPosition());
+      telemetry.addData("Lift Current Position: ", liftMotor.getCurrentPosition());
+      telemetry.addData("LiftMotor Current:",liftMotor.getCurrent(CurrentUnit.AMPS));
+      telemetry.update();
 }
 }
