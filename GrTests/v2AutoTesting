@@ -17,6 +17,10 @@ while(((Math.abs(liftMotor.getCurrentPosition-X) > 1) || (Math.abs(currentPositi
 ----------------------functions and methods----------------------
 
 //a run to target position drive mode with otos, includes proportional control and position correction
+//attempting to test for adding angles within the moveToTargetPosition
+//included everything about h data coming from the OTOS, the heading angle
+//different from the old code
+//under testing
 private void moveToTargetUsingOTOS(double targetX, double targetY, double targetH) {
     SparkFunOTOS.Pose2D currentPosition = myOtos.getPosition();
 
@@ -72,6 +76,7 @@ private void moveToTargetAngleUsingOTOS(double targetH) {
     stopMotors();
 }
 //setting the power of drive motors, through the calculation done in the run to target position drive mode
+//also added in rotatePowers
 private void driveMotors(double forwardPower, double strafePower, double rotatePower) {
     // Example drivetrain power logic
     double frontLeft = forwardPower + strafePower + rotatePower;
@@ -169,7 +174,7 @@ private void liftMotorWhileMoving(double speed, double location, double x, doubl
 private double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
 }  
-
+//wrapping angle, so it doesn't exceed the maximum limit of the radian 2pi
 private double anglewrap(double radians){
     while(radians > Math.Pi){
         radians-=2*Math.Pi;
@@ -179,6 +184,8 @@ private double anglewrap(double radians){
     }
 return radians;
 }
+//Arm Stretch, attempting to make a liftMotor movement with a armMotor composition which avoids the liftMotor running into ground
+//Doesn't work
 private void armStretch(double target){
         liftMotor.setVelocity(0);
         armMotor.setVelocity(1000);
