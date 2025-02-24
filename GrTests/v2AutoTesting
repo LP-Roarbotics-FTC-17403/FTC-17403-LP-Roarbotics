@@ -29,6 +29,30 @@ private void moveToTargetUsingOTOS(double targetX, double targetY, double target
 
     stopMotors();
 }
+//a run to position for angles while in same spot
+private void moveToTargetAngleUsingOTOS(double targetH) {
+    SparkFunOTOS.Pose2D currentPosition = myOtos.getPosition();
+
+    while (opModeIsActive() && (Math.abs(currentPosition.h - targetH) > 0.1)) {
+        // Proportional control
+        double hPower = (targetH - currentPosition.h) * 0.2; 
+
+         //Clamps the values between -1 and 1, see utility method below using Math.max and Math.min
+        hPower = clamp(hPower, -1, 1);
+
+        // Apply motor power (example, adjust based on your drivetrain)
+        //zeros for x and y due to stable position
+        driveMotors(0, 0, hPower);
+
+        currentPosition = myOtos.getPosition();
+        telemetry.addData("Current OTOS X", currentPosition.x);
+        telemetry.addData("Current OTOS Y", currentPosition.y);
+        telemetry.addData("Current OTOS H", currentPosition.h);
+        telemetry.update();
+    }
+
+    stopMotors();
+}
 //setting the power of drive motors, through the calculation done in the run to target position drive mode
 private void driveMotors(double forwardPower, double strafePower, double rotatePower) {
     // Example drivetrain power logic
