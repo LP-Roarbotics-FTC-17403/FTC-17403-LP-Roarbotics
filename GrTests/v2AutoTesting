@@ -1,3 +1,21 @@
+-----------------------example codes:--------------------------
+//allowing for every movement of the robot to be simultaneously moving, such as arm motor and drive motors
+//setting methods into fully if statements
+//applying while loops when calling methods
+//example lift motor and drive motor combined:
+//this code will run when until both lift motor and the drive motors get into dedicated positions
+while(((Math.abs(liftMotor.getCurrentPosition-X) > 1) || (Math.abs(currentPosition.x - targetX) > 0.1 || Math.abs(currentPosition.y - targetY) > 0.1){
+    liftMotor(X);
+    moveToTargetUsingOTOS(targetX, targetY);
+    currentPosition = myOtos.getPosition(); // updating currentPosition here once again due to potiential skips in if statement
+}
+
+
+
+
+
+----------------------functions and methods----------------------
+
 //a run to target position drive mode with otos, includes proportional control and position correction
 private void moveToTargetUsingOTOS(double targetX, double targetY, double targetH) {
     SparkFunOTOS.Pose2D currentPosition = myOtos.getPosition();
@@ -102,17 +120,22 @@ private void armMotorWhileMoving(double speed, double location, double x, double
     }
 }
 //simply setting the power and target position of the arm, letting it flow through the code itself
-private void armMotor(speed, targetEncoder){
-    if((Math.abs(armMotor.getCurrentPosition)-targetEncoder)>1)()
-        
+private void armMotor(double targetEncoder){
+    if((Math.abs(armMotor.getCurrentPosition)-targetEncoder)>1)(){
+        double speed = Math.abs(armMotor.getCurrentPosition-targetEncoder) * 0.2; //value can be adjustable based on how fast you want the arm.
+        clamp(speed, 0, 2500); // ensuring the speed doesn't go past 2500
         armMotor.setTargetPosition ((int)targetEncoder);
         armMotor.setVelocity(speed);
     }
 }
 //allowing the sliders to flow through the code, just like the arm motor
-private void liftMotor(speed, location){
-    liftMotor.setTargetPosition ((int)location);
-    liftMotor.setVelocity(speed);
+private void liftMotor(double targetEncoder){
+    if((Math.abs(liftMotor.getCurrentPosition)-targetEncoder)>1)(){
+        double speed = Math.abs(liftMotor.getCurrentPosition-targetEncoder) * 0.2; //value can be adjustable based on how fast you want the arm.
+        clamp(speed, 0, 2500); // ensuring the speed doesn't go past 2500
+        liftMotor.setTargetPosition ((int)location);
+        liftMotor.setVelocity(speed);
+    }
 }
 //letting only the slider move
 private void liftMotorOnly(speed, location){
