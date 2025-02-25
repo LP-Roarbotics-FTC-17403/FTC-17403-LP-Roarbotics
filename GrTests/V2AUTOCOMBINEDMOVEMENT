@@ -142,24 +142,22 @@ public class COMP_R_AUTO2_SUB_Copy extends LinearOpMode {
         telemetry.update();
 
         //Initialize timer object
-        
+        ElapsedTime timer = new ElapsedTime();
 
         //Configure OTOS
         configureOtos();
 
         /* Wait for the game driver to press play */
         waitForStart();
-
-        //Initialize OTOS
         
-        // Reset the timer
+        
         
         
         
         if (opModeIsActive()){
             currentPosition = myOtos.getPosition();
             claw.setPosition(CLOSE);
-            sleep(1000);
+            sleep(250);
             armMotorOnly(1500, ARM_CLEAR_BARRIER);
             
             moveToTargetUsingOTOS(14, 0);
@@ -169,8 +167,8 @@ public class COMP_R_AUTO2_SUB_Copy extends LinearOpMode {
             
             
             armMotorOnly(1500, ARM_SCORE_SAMPLE_IN_LOW);
-            sleep(1000);
-            while(opModeIsActive() && liftMotor.getCurrentPosition() < LIFT_SCORING_IN_HIGH_BASKET-10){
+            timer.reset();
+            while(opModeIsActive() && liftMotor.getCurrentPosition() < LIFT_SCORING_IN_HIGH_BASKET-10 && timer.seconds() < 2){
                 liftMotor(LIFT_SCORING_IN_HIGH_BASKET);
             }
             
@@ -178,9 +176,10 @@ public class COMP_R_AUTO2_SUB_Copy extends LinearOpMode {
             
             
             claw.setPosition(OPEN);
-            sleep(500);
-            
-            while(opModeIsActive() && liftMotor.getCurrentPosition() > 30){
+            sleep(250);
+
+            timer.reset();
+            while(opModeIsActive() && liftMotor.getCurrentPosition() > 30 && timer.seconds() < 2){
                 liftMotor(0);
             }
             
@@ -188,7 +187,8 @@ public class COMP_R_AUTO2_SUB_Copy extends LinearOpMode {
             armMotorOnly(1500, ARM_CLEAR_BARRIER);
             //brakePoint();
             currentPosition = myOtos.getPosition();
-            while(opModeIsActive() && (Math.abs(currentPosition.h - -140) > 0.2)){
+            timer.reset();
+            while(opModeIsActive() && (Math.abs(currentPosition.h - -140) > 0.2) && timer.seconds() < 2){
                 moveToTargetAngleUsingOTOS(-140);
             }
             stopMotion();
@@ -202,20 +202,23 @@ public class COMP_R_AUTO2_SUB_Copy extends LinearOpMode {
             grabSample(0);
             //brakePoint();
             currentPosition = myOtos.getPosition();
-            while(opModeIsActive() && (Math.abs(currentPosition.h - 0) > 0.2)){
+            timer.reset();
+            while(opModeIsActive() && (Math.abs(currentPosition.h - 0) > 0.2) && timer.seconds() < 2){
                 moveToTargetAngleUsingOTOS(0);
             }
             stopMotion();
             armMotorOnly(1500, ARM_SCORE_SAMPLE_IN_LOW);
-            while(opModeIsActive() && liftMotor.getCurrentPosition() < LIFT_SCORING_IN_HIGH_BASKET -10){
+            //resetting timer before every while loop, then setting a time for emergency stops.
+            timer.reset();
+            while(opModeIsActive() && liftMotor.getCurrentPosition() < LIFT_SCORING_IN_HIGH_BASKET -10 && timer.seconds() < 2){
                 liftMotor(LIFT_SCORING_IN_HIGH_BASKET);
             }
             
             
             claw.setPosition(OPEN);
-            sleep(500);
-            
-            while(opModeIsActive() && liftMotor.getCurrentPosition() > 30){
+            sleep(250);
+            timer.reset();
+            while(opModeIsActive() && liftMotor.getCurrentPosition() > 30 && timer.seconds() < 2){
                 liftMotor(0);
             }
             
@@ -223,7 +226,8 @@ public class COMP_R_AUTO2_SUB_Copy extends LinearOpMode {
             armMotorOnly(1500, ARM_CLEAR_BARRIER);
             
             currentPosition = myOtos.getPosition();
-            while(opModeIsActive() && (Math.abs(currentPosition.h - -118) > 0.2)){
+            timer.reset();
+            while(opModeIsActive() && (Math.abs(currentPosition.h - -118) > 0.2) && timer.seconds() < 2){
                 moveToTargetAngleUsingOTOS(-118);
             }
             stopMotion();
@@ -237,20 +241,22 @@ public class COMP_R_AUTO2_SUB_Copy extends LinearOpMode {
             grabSample(0);
             //brakePoint();
             currentPosition = myOtos.getPosition();
-            while(opModeIsActive() && (Math.abs(currentPosition.h - 0) > 0.2)){
+            timer.reset();
+            while(opModeIsActive() && (Math.abs(currentPosition.h - 0) > 0.2) && timer.seconds() < 2){
                 moveToTargetAngleUsingOTOS(0);
             }
             stopMotion();
             armMotorOnly(1500, ARM_SCORE_SAMPLE_IN_LOW);
-            while(opModeIsActive() && liftMotor.getCurrentPosition() < LIFT_SCORING_IN_HIGH_BASKET-10){
+            timer.reset();
+            while(opModeIsActive() && liftMotor.getCurrentPosition() < LIFT_SCORING_IN_HIGH_BASKET-10 && timer.seconds() < 2){
                 liftMotor(LIFT_SCORING_IN_HIGH_BASKET);
             }
             
             
             claw.setPosition(OPEN);
-            sleep(500);
-            
-            while(opModeIsActive() && liftMotor.getCurrentPosition() > 30){
+            sleep(250);
+            timer.reset();
+            while(opModeIsActive() && liftMotor.getCurrentPosition() > 30 && timer.seconds() < 2){
                 liftMotor(0);
             }
             
