@@ -151,6 +151,7 @@ public class COMP_R_AUTO2_SUB_Copy extends LinearOpMode {
         
         
         if (opModeIsActive()){
+            ElapsedTime timer = new ElapsedTime();
             currentPosition = myOtos.getPosition();
             claw.setPosition(CLOSE);
             sleep(1000);
