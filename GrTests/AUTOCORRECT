@@ -522,4 +522,19 @@ private void liftMotor(double targetEncoder){
       telemetry.addData("LiftMotor Current:",liftMotor.getCurrent(CurrentUnit.AMPS));
       telemetry.update();
 }
+
+private void armMotor(double targetEncoder){
+    if(Math.abs(armMotor.getCurrentPosition()-targetEncoder)>1){
+        double speed = Math.abs(armMotor.getCurrentPosition()-targetEncoder) * 1.5; //value can be adjustable based on how fast you want the arm.
+        clamp(speed, 0, 2500); // ensuring the speed doesn't go past 2500
+        armMotor.setTargetPosition ((int)targetEncoder);
+        armMotor.setVelocity(speed);
+        
+    }
+    telemetry.addData("Arm Variable", armPosition);
+      telemetry.addData("Arm Target Position: ", armMotor.getTargetPosition());
+      telemetry.addData("Arm Current Position: ", armMotor.getCurrentPosition());
+      telemetry.addData("ArmMotor Current:",armMotor.getCurrent(CurrentUnit.AMPS));
+      telemetry.update();
+}
 }
