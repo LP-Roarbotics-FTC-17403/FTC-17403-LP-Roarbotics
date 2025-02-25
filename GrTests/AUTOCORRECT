@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous
 
 
-public class COMP_R_AUTO2_SUB_Copy extends LinearOpMode {
+public class AUTOCORRECT extends LinearOpMode {
 
     /* Declare OpMode members. */
     public DcMotorEx bl = null, fl = null, fr = null, br = null;
@@ -69,10 +69,10 @@ public class COMP_R_AUTO2_SUB_Copy extends LinearOpMode {
     /* Variables that are used to set the arm to a specific position */
     final double LIFT_COLLAPSED = 0 * LIFT_TICKS_PER_MM;
     final double LIFT_SCORING_IN_LOW_BASKET = 0 * LIFT_TICKS_PER_MM;
-    final double LIFT_SCORING_IN_HIGH_BASKET = 700 * LIFT_TICKS_PER_MM;
+    final double LIFT_SCORING_IN_HIGH_BASKET = 670 * LIFT_TICKS_PER_MM;
     final double LIMIT = 410 * LIFT_TICKS_PER_MM;
-    final double firstSample = 390 * LIFT_TICKS_PER_MM;
-    final double secondSample = 400 * LIFT_TICKS_PER_MM;
+    final double firstSample = 375 * LIFT_TICKS_PER_MM;
+    final double secondSample = 390 * LIFT_TICKS_PER_MM;
     
 
     double liftPosition = LIFT_COLLAPSED;
@@ -151,7 +151,7 @@ public class COMP_R_AUTO2_SUB_Copy extends LinearOpMode {
         if (opModeIsActive()){
             currentPosition = myOtos.getPosition();
             claw.setPosition(CLOSE);
-            sleep(250);
+            sleep(50);
             armMotorOnly(1500, ARM_CLEAR_BARRIER);
             
             moveToTargetUsingOTOS(14, 0);
@@ -173,7 +173,7 @@ public class COMP_R_AUTO2_SUB_Copy extends LinearOpMode {
             sleep(250);
 
             timer.reset();
-            while(opModeIsActive() && liftMotor.getCurrentPosition() > 30 && timer.seconds() < 2){
+            while(opModeIsActive() && liftMotor.getCurrentPosition() > 30 && timer.seconds() < 1.75){
                 liftMotor(0);
             }
             
@@ -491,10 +491,12 @@ private double clamp(double value, double min, double max) {
 
 
 private void grabSample(double targetPosition){
+    ElapsedTime timer2 = new ElapsedTime();
     armMotor.setTargetPosition((int)HORIZONTAL_ARM);
     liftMotor.setTargetPosition((int)targetPosition);
     armMotor.setVelocity(2000);
-    while(Math.abs(liftMotor.getCurrentPosition()-targetPosition) > 20 && opModeIsActive()){
+    timer2.reset();
+    while(Math.abs(liftMotor.getCurrentPosition()-targetPosition) > 20 && opModeIsActive() && timer2.seconds() < 2){
         double liftPower = (Math.abs(liftMotor.getCurrentPosition()-targetPosition))*5;
         liftPower = clamp(liftPower, 0, 2500);
         liftMotor.setVelocity(liftPower);
@@ -506,12 +508,12 @@ private void chomp(double targetArm){
     armMotor.setVelocity(1000);
     sleep(250);
     claw.setPosition(CLOSE);
-    sleep(100);
+    sleep(300);
 }
 private void liftMotor(double targetEncoder){
     if(Math.abs(liftMotor.getCurrentPosition()-targetEncoder)>1){
-        double speed = Math.abs(liftMotor.getCurrentPosition()-targetEncoder) * 1.5; //value can be adjustable based on how fast you want the arm.
-        clamp(speed, 0, 2500); // ensuring the speed doesn't go past 2500
+        double speed = Math.abs(liftMotor.getCurrentPosition()-targetEncoder) * 2.5; //value can be adjustable based on how fast you want the arm.
+        clamp(speed, 0, 2200); // ensuring the speed doesn't go past 2500
         liftMotor.setTargetPosition ((int)targetEncoder);
         liftMotor.setVelocity(speed);
         
