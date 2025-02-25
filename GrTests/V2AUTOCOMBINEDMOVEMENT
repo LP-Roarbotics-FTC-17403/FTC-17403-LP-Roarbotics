@@ -1,9 +1,3 @@
----------------------------------------purpose of this file-------------------------------------------------
-//trying to combine arm and drive movements into one
-//improving time for auto
-//attempting to reach 4 sample auto
-//meant to use after stablizing 3 sample auto
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -329,7 +323,7 @@ public class COMP_R_AUTO2_SUB_Copy extends LinearOpMode {
 private void moveToTargetUsingOTOS(double targetX, double targetY) {
     
 
-    while (opModeIsActive() && (Math.abs(currentPosition.x - targetX) > 0.1 || Math.abs(currentPosition.y - targetY) > 0.1 )) {
+    if (opModeIsActive() && (Math.abs(currentPosition.x - targetX) > 0.1 || Math.abs(currentPosition.y - targetY) > 0.1 )) {
         double xPower = (targetX - currentPosition.x) * 0.2; // Proportional control
         double yPower = (targetY - currentPosition.y) * 0.2;
         
@@ -350,9 +344,9 @@ private void moveToTargetUsingOTOS(double targetX, double targetY) {
         telemetry.addData("Current OTOS X", currentPosition.x);
         telemetry.addData("Current OTOS Y", currentPosition.y);
         telemetry.update();
+    }else{
+        stopMotion();
     }
-
-    stopMotion();
 }
 
 //a run to position for angles while in same spot
@@ -526,6 +520,21 @@ private void liftMotor(double targetEncoder){
       telemetry.addData("Lift Target Position: ", liftMotor.getTargetPosition());
       telemetry.addData("Lift Current Position: ", liftMotor.getCurrentPosition());
       telemetry.addData("LiftMotor Current:",liftMotor.getCurrent(CurrentUnit.AMPS));
+      telemetry.update();
+}
+
+private void armMotor(double targetEncoder){
+    if(Math.abs(armMotor.getCurrentPosition()-targetEncoder)>1){
+        double speed = Math.abs(armMotor.getCurrentPosition()-targetEncoder) * 1.5; //value can be adjustable based on how fast you want the arm.
+        clamp(speed, 0, 2500); // ensuring the speed doesn't go past 2500
+        armMotor.setTargetPosition ((int)targetEncoder);
+        armMotor.setVelocity(speed);
+        
+    }
+    telemetry.addData("Arm Variable", armPosition);
+      telemetry.addData("Arm Target Position: ", armMotor.getTargetPosition());
+      telemetry.addData("Arm Current Position: ", armMotor.getCurrentPosition());
+      telemetry.addData("ArmMotor Current:",armMotor.getCurrent(CurrentUnit.AMPS));
       telemetry.update();
 }
 }
