@@ -196,12 +196,14 @@ public class AUTOCORRECT extends LinearOpMode {
             grabSample(0);
             //brakePoint();
             currentPosition = myOtos.getPosition();
+
             timer.reset();
             while(opModeIsActive() && (Math.abs(currentPosition.h - 0) > 0.2) && timer.seconds() < 2){
                 moveToTargetAngleUsingOTOS(0);
+                synchronousArmMotor(1500, ARM_SCORE_SAMPLE_IN_LOW);
             }
+
             stopMotion();
-            armMotorOnly(1500, ARM_SCORE_SAMPLE_IN_LOW);
             //resetting timer before every while loop, then setting a time for emergency stops.
             timer.reset();
             while(opModeIsActive() && liftMotor.getCurrentPosition() < LIFT_SCORING_IN_HIGH_BASKET -10 && timer.seconds() < 2){
@@ -453,6 +455,19 @@ private void armMotorOnly(double speed, double location){
       telemetry.update();
     }
 }
+
+private void synchronousArmMotor(double speed, double location){
+    armMotor.setTargetPosition ((int)location);
+    armMotor.setVelocity(speed);
+    if (armMotor.isBusy() && opModeIsActive()) {
+      telemetry.addData("Arm Variable", armPosition);
+      telemetry.addData("Arm Target Position: ", armMotor.getTargetPosition());
+      telemetry.addData("Arm Current Position: ", armMotor.getCurrentPosition());
+      telemetry.addData("ArmMotor Current:",armMotor.getCurrent(CurrentUnit.AMPS));
+      telemetry.update();
+    }
+}
+
 private void brakePoint(){
     while (!gamepad1.x && opModeIsActive()){
                 sleep(20);
