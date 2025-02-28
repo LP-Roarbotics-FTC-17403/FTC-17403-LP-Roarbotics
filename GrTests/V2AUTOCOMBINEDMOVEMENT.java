@@ -157,8 +157,11 @@ public class COMP_R_AUTO2_SUB_Copy extends LinearOpMode {
             moveToTargetUsingOTOS(14, 0);
             
             
-           // rotateMotors(0.4, "left",  0);
-            
+           //attempting to allow the movements of the move to Target Position and the armMotor movement to combine, saving time.
+            while (opModeIsActive() && (Math.abs(currentPosition.x - targetX) > 0.1 || Math.abs(currentPosition.y - targetY) > 0.1 && armMotor.getCurrentPosition< ARM_SCORE_IN_LOW_BASKET - 1)){
+                 moveToTargetUsingOTOS(14, 0);
+                 armMotor(ARM_SCORE_SAMPLE_IN_LOW);
+            }
             
             armMotorOnly(1500, ARM_SCORE_SAMPLE_IN_LOW);
             timer.reset();
@@ -528,7 +531,7 @@ private void armMotor(double targetEncoder){
         double speed = Math.abs(armMotor.getCurrentPosition()-targetEncoder) * 1.5; //value can be adjustable based on how fast you want the arm.
         clamp(speed, 0, 2500); // ensuring the speed doesn't go past 2500
         armMotor.setTargetPosition ((int)targetEncoder);
-        armMotor.setVelocity(speed);
+        armMotor.setVelocity(1000);
         
     }
     telemetry.addData("Arm Variable", armPosition);
