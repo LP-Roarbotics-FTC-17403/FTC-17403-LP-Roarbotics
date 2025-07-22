@@ -1,0 +1,429 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+
+import java.util.List;
+
+@Autonomous(name="AutoTesting", group="Robot")
+public class AutoTesting extends LinearOpMode {
+
+    public DcMotor leftMotor = null;
+    public DcMotor rightMotor = null;
+    public DcMotor armMotor = null;
+    public Servo intake = null;
+    private IMU imu;
+    
+    YawPitchRollAngles robotOrientation;
+    robotOrientation = imu.getRobotYawPitchRollAngles();
+
+    private static final boolean USE_WEBCAM = true;
+
+    private AprilTagProcessor aprilTag;
+    private VisionPortal visionPortal;
+
+    final double ARM_TICKS_PER_DEGREE =
+            288
+                    * 72.0 / 1.0
+                    * 125.0 / 45.0
+                    * 1 / 360.0;
+
+    final double WHEEL_TICKS_PER_MM =
+            28
+                    * 20 / 1.0
+                    * 72 / 45
+                    / 282.743388;
+
+    final double ARM_UP = 0.5 * ARM_TICKS_PER_DEGREE;
+    final double ARM_DOWN = 0.05 * ARM_TICKS_PER_DEGREE;
+    final double ARM_OFF = 0 * ARM_TICKS_PER_DEGREE;
+    
+    
+    final double FIRST_FORWARD = 475 * WHEEL_TICKS_PER_MM;
+    final double SECOND_FORWARD = 160 * WHEEL_TICKS_PER_MM;
+    final double THIRD_FORWARD = 300 * WHEEL_TICKS_PER_MM;
+    final double FOURTH_FORWARD = 100 * WHEEL_TICKS_PER_MM;
+    final double FIFTH_FORWARD = 180 * WHEEL_TICKS_PER_MM;
+    final double FIRST_BACKWARD = -100 * WHEEL_TICKS_PER_MM;
+    final double SECOND_BACKWARD = -120 * WHEEL_TICKS_PER_MM;
+    final double ROTATE90 = 227 * WHEEL_TICKS_PER_MM;
+    final double ROTATE2 = 229 * WHEEL_TICKS_PER_MM;
+
+
+    double armPosition = (int)ARM_OFF;
+    int armHoldPosition = 0;
+    
+    private boolean hasPerformedAction = false;
+
+    // Make foundTargetTag a class field so runOpMode and telemetryAprilTag both can access it
+    private boolean foundTargetTag = false;
+
+    @Override
+    public void runOpMode() {
+        rightMotor = hardwareMap.dcMotor.get("right");
+        leftMotor = hardwareMap.dcMotor.get("left");
+        armMotor = hardwareMap.get(DcMotor.class, "arm");
+        intake = hardwareMap.get(Servo.class, "intake");
+        imu = hardwareMap.get(IMU.class, "imu");
+
+        leftMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        armMotor.setTargetPosition(0);
+        rightMotor.setTargetPosition(0);
+        leftMotor.setTargetPosition(0);
+
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                RevHubOrientationOnRobot.UsbFacingDirection.LEFT));
+        imu.initialize(parameters);
+
+        initAprilTag();
+
+        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
+        telemetry.addData(">", "Touch Play to start OpMode");
+        telemetry.addLine("Robot Ready.");
+        telemetry.update();
+
+        waitForStart();
+        intake.setPosition(0);
+
+        while (opModeIsActive()) {
+            telemetryAprilTag();
+
+            if (gamepad1.dpad_down) {
+                visionPortal.stopStreaming();
+            } else if (gamepad1.dpad_up) {
+                visionPortal.resumeStreaming();
+            }
+
+             if (foundTargetTag && !hasPerformedAction) {
+                performAction1();
+                hasPerformedAction = true;
+                sleep(500);
+                
+                performAction2();
+                sleep(500);
+                
+                performAction3();
+                sleep(500);
+                
+                performAction4();
+                sleep(500);
+                
+                performAction5();
+                sleep(500);
+                
+                performAction6();
+                sleep(500);
+                
+                performAction7();
+                sleep(500);
+                
+                performAction8();
+                sleep(500);
+                
+                performAction4();
+                sleep(500);
+                
+                performAction5();
+                sleep(500);
+                
+                performAction6();
+                sleep(500);
+                
+                
+            }
+
+            telemetry.update();
+            sleep(20);
+        }
+
+        visionPortal.close();
+    }
+
+    private void performAction1(){
+        
+        intake.setPosition(0.20);
+        armMotor.setTargetPosition((int) ARM_DOWN);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.5);
+        armHoldPosition = (int) ARM_DOWN;
+        waitForArmMotor();
+        sleep(100);
+        
+        leftMotor.setTargetPosition((int) FIRST_FORWARD);
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotor.setPower(0.5);
+        
+        rightMotor.setTargetPosition((int) FIRST_FORWARD);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setPower(0.5);
+        sleep(500);
+        
+    }
+    
+    private void performAction2() {
+        
+        armMotor.setTargetPosition((int) ARM_DOWN);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.5);
+        armHoldPosition = (int) ARM_DOWN;
+        sleep(200);
+        intake.setPosition(0.90);
+        sleep(500);
+        
+        armMotor.setTargetPosition((int) ARM_UP);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.5);
+        armHoldPosition = (int) ARM_UP;
+        waitForArmMotor();
+      
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); 
+        leftMotor.setTargetPosition((int) SECOND_FORWARD);
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotor.setPower(0.5);
+        
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setTargetPosition((int) SECOND_FORWARD);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setPower(0.5);
+        waitForDriveMotors();
+        sleep(100);
+        
+        intake.setPosition(0.20);
+        sleep(500);
+        
+    }
+    
+    private void performAction3() {
+        
+        sleep(500);
+        leftMotor.setTargetPosition((int) FIRST_BACKWARD);
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotor.setPower(-0.5);
+        
+        rightMotor.setTargetPosition((int) FIRST_BACKWARD);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setPower(-0.5);
+        waitForDriveMotors();
+        sleep(100);
+        
+        armMotor.setTargetPosition((int) ARM_DOWN);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.5);
+        armHoldPosition = (int) ARM_DOWN;
+        waitForArmMotor();
+        
+    }
+    
+private void performAction4() {
+   
+    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    leftMotor.setTargetPosition((int) -ROTATE90);
+    leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    leftMotor.setPower(-0.5);
+    
+    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    rightMotor.setTargetPosition((int) ROTATE90);
+    rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    rightMotor.setPower(0.5);
+    waitForDriveMotors();
+    sleep(100);
+}
+
+    private void performAction5() {
+        
+    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    leftMotor.setTargetPosition((int) THIRD_FORWARD);
+    leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    leftMotor.setPower(0.5);
+    
+    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    rightMotor.setTargetPosition((int) THIRD_FORWARD);
+    rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    rightMotor.setPower(0.5);
+    waitForDriveMotors();
+    sleep(100);
+        
+    }
+    
+    private void performAction6() {
+    
+    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    leftMotor.setTargetPosition((int) ROTATE90);
+    leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    leftMotor.setPower(0.5);
+    
+    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    rightMotor.setTargetPosition((int) -ROTATE90);
+    rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    rightMotor.setPower(-0.5);
+    waitForDriveMotors();
+    sleep(100);
+}
+
+private void performAction7() {
+    
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); 
+        leftMotor.setTargetPosition((int) FOURTH_FORWARD);
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotor.setPower(0.5);
+        
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setTargetPosition((int) FOURTH_FORWARD);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setPower(0.5);
+        waitForDriveMotors();
+        
+        armMotor.setTargetPosition((int) ARM_DOWN);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.5);
+        armHoldPosition = (int) ARM_DOWN;
+        waitForArmMotor();
+        intake.setPosition(0.90);
+        sleep(500);
+        
+        armMotor.setTargetPosition((int) ARM_UP);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.5);
+        armHoldPosition = (int) ARM_UP;
+        waitForArmMotor();
+      
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); 
+        leftMotor.setTargetPosition((int) FIFTH_FORWARD);
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotor.setPower(0.5);
+        
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setTargetPosition((int) FIFTH_FORWARD);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setPower(0.5);
+        waitForDriveMotors();
+        sleep(100);
+        
+        intake.setPosition(0.20);
+        sleep(500);
+    }
+    
+    private void performAction8() {
+        
+        sleep(500);
+        leftMotor.setTargetPosition((int) SECOND_BACKWARD);
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotor.setPower(-0.5);
+        
+        rightMotor.setTargetPosition((int) SECOND_BACKWARD);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setPower(-0.5);
+        waitForDriveMotors();
+        sleep(100);
+        
+        armMotor.setTargetPosition((int) ARM_DOWN);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.5);
+        armHoldPosition = (int) ARM_DOWN;
+        waitForArmMotor();  
+        
+    }
+    
+    private void performAction9() {
+    
+    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    leftMotor.setTargetPosition((int) ROTATE2);
+    leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    leftMotor.setPower(0.5);
+    
+    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    rightMotor.setTargetPosition((int) -ROTATE2);
+    rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    rightMotor.setPower(-0.5);
+    waitForDriveMotors();
+    
+    }
+
+    private void waitForDriveMotors() {
+    while (opModeIsActive() && (leftMotor.isBusy() || rightMotor.isBusy())) {
+        telemetry.addData("Waiting for motors...", "Left: %d, Right: %d",
+                leftMotor.getCurrentPosition(),
+                rightMotor.getCurrentPosition());
+        telemetry.update();
+        sleep(20);
+    }
+
+    leftMotor.setPower(0);
+    rightMotor.setPower(0);
+}
+
+    private void waitForArmMotor() {
+    while (opModeIsActive() && armMotor.isBusy()) {
+        telemetry.addData("Waiting for arm motor...", "Position: %d", armMotor.getCurrentPosition());
+        telemetry.update();
+        sleep(20);
+    }
+    armMotor.setPower(0.1);
+}
+
+    private void telemetryAprilTag() {
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        telemetry.addData("# AprilTags Detected", currentDetections.size());
+
+        foundTargetTag = false;  // reset each time before checking detections
+
+        for (AprilTagDetection detection : currentDetections) {
+            telemetry.addData("Tag ID", detection.id);
+
+            if (detection.metadata != null) {
+                telemetry.addLine(String.format("(ID %d)", detection.id));
+            } else {
+                telemetry.addLine(String.format("(ID %d) Unknown", detection.id));
+                telemetry.addData("Center", String.format("%6.0f %6.0f (pixels)", detection.center.x, detection.center.y));
+            }
+
+            if (detection.id == 3) { 
+                foundTargetTag = true;
+            }
+        }
+
+        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        telemetry.addData("Heading (rad)", botHeading);
+        telemetry.addData("arm Target Position", armMotor.getTargetPosition());
+        telemetry.addData("arm Encoder", armMotor.getCurrentPosition());
+    }
+
+    private void initAprilTag() {
+        aprilTag = AprilTagProcessor.easyCreateWithDefaults();
+
+        if (USE_WEBCAM) {
+            visionPortal = VisionPortal.easyCreateWithDefaults(
+                    hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
+        } else {
+            visionPortal = VisionPortal.easyCreateWithDefaults(
+                    BuiltinCameraDirection.BACK, aprilTag);
+        }
+    }
+}
