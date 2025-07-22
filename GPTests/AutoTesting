@@ -15,6 +15,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import android.util.Size;
+import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 
 import java.util.List;
 
@@ -26,9 +28,7 @@ public class AutoTesting extends LinearOpMode {
     public DcMotor armMotor = null;
     public Servo intake = null;
     private IMU imu;
-    
-    YawPitchRollAngles robotOrientation;
-    robotOrientation = imu.getRobotYawPitchRollAngles();
+    double yaw;
 
     private static final boolean USE_WEBCAM = true;
 
@@ -57,10 +57,11 @@ public class AutoTesting extends LinearOpMode {
     final double THIRD_FORWARD = 300 * WHEEL_TICKS_PER_MM;
     final double FOURTH_FORWARD = 100 * WHEEL_TICKS_PER_MM;
     final double FIFTH_FORWARD = 180 * WHEEL_TICKS_PER_MM;
+    final double SIXTH_FORWARD = 175 * WHEEL_TICKS_PER_MM;
     final double FIRST_BACKWARD = -100 * WHEEL_TICKS_PER_MM;
     final double SECOND_BACKWARD = -120 * WHEEL_TICKS_PER_MM;
     final double ROTATE90 = 227 * WHEEL_TICKS_PER_MM;
-    final double ROTATE2 = 229 * WHEEL_TICKS_PER_MM;
+    final double ROTATE2 = 237 * WHEEL_TICKS_PER_MM;
 
 
     double armPosition = (int)ARM_OFF;
@@ -78,6 +79,9 @@ public class AutoTesting extends LinearOpMode {
         armMotor = hardwareMap.get(DcMotor.class, "arm");
         intake = hardwareMap.get(Servo.class, "intake");
         imu = hardwareMap.get(IMU.class, "imu");
+
+        YawPitchRollAngles robotOrientation;
+        robotOrientation = imu.getRobotYawPitchRollAngles();
 
         leftMotor.setDirection(DcMotor.Direction.REVERSE);
 
@@ -153,8 +157,13 @@ public class AutoTesting extends LinearOpMode {
                 performAction5();
                 sleep(500);
                 
-                performAction6();
+                performAction9();
                 sleep(500);
+                
+                performAction10();
+                sleep(500);
+                
+                
                 
                 
             }
@@ -365,6 +374,50 @@ private void performAction7() {
     waitForDriveMotors();
     
     }
+    
+    private void performAction10() {
+        
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); 
+        leftMotor.setTargetPosition((int) SIXTH_FORWARD);
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotor.setPower(0.5);
+        
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setTargetPosition((int) SIXTH_FORWARD);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setPower(0.5);
+        waitForDriveMotors();
+        
+        armMotor.setTargetPosition((int) ARM_DOWN);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.5);
+        armHoldPosition = (int) ARM_DOWN;
+        waitForArmMotor();
+        intake.setPosition(0.90);
+        sleep(500);
+        
+        armMotor.setTargetPosition((int) ARM_UP);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.5);
+        armHoldPosition = (int) ARM_UP;
+        waitForArmMotor();
+      
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); 
+        leftMotor.setTargetPosition((int) FIFTH_FORWARD);
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotor.setPower(0.5);
+        
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setTargetPosition((int) FIFTH_FORWARD);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setPower(0.5);
+        waitForDriveMotors();
+        sleep(100);
+        
+        intake.setPosition(0.20);
+        sleep(500);
+        
+    }
 
     private void waitForDriveMotors() {
     while (opModeIsActive() && (leftMotor.isBusy() || rightMotor.isBusy())) {
@@ -398,7 +451,16 @@ private void performAction7() {
             telemetry.addData("Tag ID", detection.id);
 
             if (detection.metadata != null) {
-                telemetry.addLine(String.format("(ID %d)", detection.id));
+                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)",
+                        detection.robotPose.getPosition().x,
+                        detection.robotPose.getPosition().y,
+                        detection.robotPose.getPosition().z));
+                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)",
+                        detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES),
+                        detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES),
+                        detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
+                        yaw = detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES);
             } else {
                 telemetry.addLine(String.format("(ID %d) Unknown", detection.id));
                 telemetry.addData("Center", String.format("%6.0f %6.0f (pixels)", detection.center.x, detection.center.y));
@@ -425,5 +487,5 @@ private void performAction7() {
             visionPortal = VisionPortal.easyCreateWithDefaults(
                     BuiltinCameraDirection.BACK, aprilTag);
         }
-    }
+}
 }
