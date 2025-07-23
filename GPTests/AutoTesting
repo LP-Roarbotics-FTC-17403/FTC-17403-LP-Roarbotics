@@ -48,7 +48,7 @@ public class AutoTesting extends LinearOpMode {
                     / 282.743388;
 
     final double ARM_UP = 0.5 * ARM_TICKS_PER_DEGREE;
-    final double ARM_DOWN = 0.05 * ARM_TICKS_PER_DEGREE;
+    final double ARM_DOWN = 0.04 * ARM_TICKS_PER_DEGREE;
     final double ARM_OFF = 0 * ARM_TICKS_PER_DEGREE;
     
     
@@ -61,7 +61,7 @@ public class AutoTesting extends LinearOpMode {
     final double FIRST_BACKWARD = -100 * WHEEL_TICKS_PER_MM;
     final double SECOND_BACKWARD = -120 * WHEEL_TICKS_PER_MM;
     final double ROTATE90 = 227 * WHEEL_TICKS_PER_MM;
-    final double ROTATE2 = 237 * WHEEL_TICKS_PER_MM;
+    final double ROTATE2 = 241 * WHEEL_TICKS_PER_MM;
 
 
     double armPosition = (int)ARM_OFF;
@@ -131,40 +131,37 @@ public class AutoTesting extends LinearOpMode {
                 sleep(500);
                 
                 performAction2();
-                sleep(500);
+                sleep(200);
                 
                 performAction3();
-                sleep(500);
+                sleep(200);
                 
                 performAction4();
-                sleep(500);
+                sleep(200);
                 
                 performAction5();
-                sleep(500);
+                sleep(200);
                 
                 performAction6();
-                sleep(500);
+                sleep(200);
                 
                 performAction7();
-                sleep(500);
+                sleep(200);
                 
                 performAction8();
-                sleep(500);
+                sleep(200);
                 
                 performAction4();
-                sleep(500);
+                sleep(200);
                 
                 performAction5();
-                sleep(500);
+                sleep(200);
                 
                 performAction9();
-                sleep(500);
+                sleep(200);
                 
                 performAction10();
-                sleep(500);
-                
-                
-                
+                sleep(200);
                 
             }
 
@@ -180,7 +177,7 @@ public class AutoTesting extends LinearOpMode {
         intake.setPosition(0.20);
         armMotor.setTargetPosition((int) ARM_DOWN);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setPower(0.5);
+        armMotor.setPower(0.8);
         armHoldPosition = (int) ARM_DOWN;
         waitForArmMotor();
         sleep(100);
@@ -204,11 +201,12 @@ public class AutoTesting extends LinearOpMode {
         armHoldPosition = (int) ARM_DOWN;
         sleep(200);
         intake.setPosition(0.90);
-        sleep(500);
+        sleep(200);
         
+        sleep(100);
         armMotor.setTargetPosition((int) ARM_UP);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setPower(0.5);
+        armMotor.setPower(0.8);
         armHoldPosition = (int) ARM_UP;
         waitForArmMotor();
       
@@ -225,13 +223,13 @@ public class AutoTesting extends LinearOpMode {
         sleep(100);
         
         intake.setPosition(0.20);
-        sleep(500);
+        sleep(200);
         
     }
     
     private void performAction3() {
         
-        sleep(500);
+        sleep(200);
         leftMotor.setTargetPosition((int) FIRST_BACKWARD);
         leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftMotor.setPower(-0.5);
@@ -313,13 +311,13 @@ private void performAction7() {
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armMotor.setPower(0.5);
         armHoldPosition = (int) ARM_DOWN;
-        waitForArmMotor();
+        sleep(200);
         intake.setPosition(0.90);
-        sleep(500);
+        sleep(200);
         
         armMotor.setTargetPosition((int) ARM_UP);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setPower(0.5);
+        armMotor.setPower(0.8);
         armHoldPosition = (int) ARM_UP;
         waitForArmMotor();
       
@@ -336,12 +334,12 @@ private void performAction7() {
         sleep(100);
         
         intake.setPosition(0.20);
-        sleep(500);
+        sleep(200);
     }
     
     private void performAction8() {
         
-        sleep(500);
+        sleep(200);
         leftMotor.setTargetPosition((int) SECOND_BACKWARD);
         leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftMotor.setPower(-0.5);
@@ -354,7 +352,7 @@ private void performAction7() {
         
         armMotor.setTargetPosition((int) ARM_DOWN);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setPower(0.5);
+        armMotor.setPower(0.8);
         armHoldPosition = (int) ARM_DOWN;
         waitForArmMotor();  
         
@@ -392,13 +390,13 @@ private void performAction7() {
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armMotor.setPower(0.5);
         armHoldPosition = (int) ARM_DOWN;
-        waitForArmMotor();
+        sleep(200);
         intake.setPosition(0.90);
-        sleep(500);
+        sleep(200);
         
         armMotor.setTargetPosition((int) ARM_UP);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setPower(0.5);
+        armMotor.setPower(0.8);
         armHoldPosition = (int) ARM_UP;
         waitForArmMotor();
       
@@ -415,7 +413,25 @@ private void performAction7() {
         sleep(100);
         
         intake.setPosition(0.20);
-        sleep(500);
+        sleep(200);
+        
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); 
+        leftMotor.setTargetPosition((int) FIRST_BACKWARD);
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotor.setPower(-0.5);
+        
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setTargetPosition((int) FIRST_BACKWARD);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setPower(-0.5);
+        waitForDriveMotors();
+        sleep(100);
+        
+        armMotor.setTargetPosition((int) ARM_OFF);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.5);
+        armHoldPosition = (int) ARM_OFF;
+        waitForArmMotor();
         
     }
 
@@ -476,7 +492,51 @@ private void performAction7() {
         telemetry.addData("arm Target Position", armMotor.getTargetPosition());
         telemetry.addData("arm Encoder", armMotor.getCurrentPosition());
     }
+    
+    private void turnToAngleIMUWithEncoders(double degrees, double initialPower, double slowPower) {
+    double startYaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+    double targetYaw = normalizeAngle(startYaw + degrees);
 
+    // Decide direction
+    double power = degrees > 0 ? initialPower : -initialPower;
+    double slowDirection = degrees > 0 ? slowPower : -slowPower;
+
+    // Start turning roughly using encoders (optional coarse move)
+    leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    leftMotor.setPower(power);
+    rightMotor.setPower(-power);
+
+    while (opModeIsActive()) {
+        double currentYaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        double error = normalizeAngle(targetYaw - currentYaw);
+
+        // Once we're close to the angle, reduce speed
+        if (Math.abs(error) < 15) {
+            leftMotor.setPower(slowDirection);
+            rightMotor.setPower(-slowDirection);
+        }
+
+        // Within 1 degree: stop
+        if (Math.abs(error) < 1.0) break;
+
+        telemetry.addData("Turning", "Target: %.2f, Current: %.2f, Error: %.2f", targetYaw, currentYaw, error);
+        telemetry.update();
+        sleep(10);
+    }
+
+    leftMotor.setPower(0);
+    rightMotor.setPower(0);
+    sleep(100); // Pause for stability
+}
+
+private double normalizeAngle(double angle) {
+    while (angle > 180) angle -= 360;
+    while (angle < -180) angle += 360;
+    return angle;
+}
+
+    
     private void initAprilTag() {
         aprilTag = AprilTagProcessor.easyCreateWithDefaults();
 
