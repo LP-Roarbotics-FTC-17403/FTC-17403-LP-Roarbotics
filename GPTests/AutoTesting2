@@ -20,8 +20,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 
 import java.util.List;
 
-@Autonomous(name="AutoTesting", group="Robot")
-public class AutoTesting extends LinearOpMode {
+@Autonomous(name="AutoTesting2", group="Robot")
+public class AutoTesting2 extends LinearOpMode {
 
     public DcMotor leftMotor = null;
     public DcMotor rightMotor = null;
