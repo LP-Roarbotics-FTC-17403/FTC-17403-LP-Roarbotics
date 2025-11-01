@@ -228,7 +228,7 @@ public class DecodeRi3D extends OpMode {
             }
         }
 
-        if (gamepad2.aWasPressed()){
+        if (gamepad1.aWasPressed()){
             switch (intakeState){
                 case ON:
                     intakeState = IntakeState.OFF;
