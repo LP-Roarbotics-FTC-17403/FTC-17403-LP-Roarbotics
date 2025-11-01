@@ -207,15 +207,15 @@ public class DecodeRi3D extends OpMode {
          * Here we give the user control of the speed of the launcher motor without automatically
          * queuing a shot.
          */
-        if (gamepad1.y) {
+        if (gamepad2.y) {
             leftLauncher.setVelocity(launcherTarget);
             rightLauncher.setVelocity(launcherTarget);
-        } else if (gamepad1.b) { // stop flywheel
+        } else if (gamepad2.b) { // stop flywheel
             leftLauncher.setVelocity(STOP_SPEED);
             rightLauncher.setVelocity(STOP_SPEED);
         }
 
-        if (gamepad1.dpadDownWasPressed()) {
+        if (gamepad2.dpadDownWasPressed()) {
             switch (diverterDirection){
                 case LEFT:
                     diverterDirection = DiverterDirection.RIGHT;
@@ -228,7 +228,7 @@ public class DecodeRi3D extends OpMode {
             }
         }
 
-        if (gamepad1.aWasPressed()){
+        if (gamepad2.aWasPressed()){
             switch (intakeState){
                 case ON:
                     intakeState = IntakeState.OFF;
@@ -241,7 +241,7 @@ public class DecodeRi3D extends OpMode {
             }
         }
 
-        if (gamepad1.dpadUpWasPressed()) {
+        if (gamepad2.dpadUpWasPressed()) {
             switch (launcherDistance) {
                 case CLOSE:
                     launcherDistance = LauncherDistance.FAR;
