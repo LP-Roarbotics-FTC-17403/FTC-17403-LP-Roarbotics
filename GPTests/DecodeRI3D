@@ -279,23 +279,28 @@ public class DecodeRi3D extends OpMode {
     public void stop() {
     }
 
-    void mecanumDrive(double forward, double strafe, double rotate){
+    void mecanumDrive(double y, double x, double rx){
 
-        /* the denominator is the largest motor power (absolute value) or 1
-         * This ensures all the powers maintain the same ratio,
-         * but only if at least one is out of the range [-1, 1]
-         */
-        double denominator = Math.max(Math.abs(forward) + Math.abs(strafe) + Math.abs(rotate), 1);
+           // Rotate the movement direction counter to the bot's rotation
+           //double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+           //double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-        leftFrontPower = (forward + strafe + rotate) / denominator;
-        rightFrontPower = (forward - strafe - rotate) / denominator;
-        leftBackPower = (forward - strafe + rotate) / denominator;
-        rightBackPower = (forward + strafe - rotate) / denominator;
+           //rotX = rotX * 1.1;  // Counteract imperfect strafing
 
-        leftFrontDrive.setPower(leftFrontPower);
-        rightFrontDrive.setPower(rightFrontPower);
-        leftBackDrive.setPower(leftBackPower);
-        rightBackDrive.setPower(rightBackPower);
+           // Denominator is the largest motor power (absolute value) or 1
+           // This ensures all the powers maintain the same ratio,
+           // but only if at least one is out of the range [-1, 1]
+           double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+           double frontLeftPower = (y + x + rx) / denominator;
+           double backLeftPower = (y - x + rx) / denominator;
+           double frontRightPower = (y - x - rx) / denominator;
+           double backRightPower = (y + x - rx) / denominator;
+
+           leftFrontDrive.setPower(frontLeftPower);
+           leftBackDrive.setPower(backLeftPower);
+           rightFrontDrive.setPower(frontRightPower);
+           rightBackDrive.setPower(backRightPower);
+      
 
     }
 
