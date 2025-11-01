@@ -259,8 +259,8 @@ public class DecodeRi3D extends OpMode {
         /*
          * Now we call our "Launch" function.
          */
-        launchLeft(gamepad1.leftBumperWasPressed());
-        launchRight(gamepad1.rightBumperWasPressed());
+        launchLeft(gamepad2.leftBumperWasPressed());
+        launchRight(gamepad2.rightBumperWasPressed());
 
         /*
          * Show the state and motor powers
