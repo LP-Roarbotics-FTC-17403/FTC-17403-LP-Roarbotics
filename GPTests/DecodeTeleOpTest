@@ -24,6 +24,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -40,9 +41,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * 2025-2026 FIRST® Tech Challenge season DECODE™!
  */
 
-@TeleOp(name = "DECODE Ri3D", group = "StarterBot")
+@TeleOp(name = "DecodeTeleOpTest", group = "TestCode")
 //@Disabled
-public class DecodeRi3D extends OpMode {
+public class DecodeTeleOpTest extends OpMode {
     final double FEED_TIME_SECONDS = 0.80; //The feeder servos run this long when a shot is requested.
     final double STOP_SPEED = 0.0; //We send this power to the servos when we want them to stop.
     final double FULL_SPEED = 1.0;
@@ -173,7 +174,7 @@ public class DecodeRi3D extends OpMode {
          * Much like our drivetrain motors, we set the left feeder servo to reverse so that they
          * both work to feed the ball into the robot.
          */
-        rightFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
 
         /*
          * Tell the driver that initialization is complete.
@@ -281,7 +282,7 @@ public class DecodeRi3D extends OpMode {
 
     void mecanumDrive(double y, double x, double rx){
 
-           double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+           //double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
            // Rotate the movement direction counter to the bot's rotation
            //double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
