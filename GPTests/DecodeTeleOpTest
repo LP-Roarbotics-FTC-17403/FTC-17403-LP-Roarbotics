@@ -44,7 +44,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name = "DecodeTeleOpTest", group = "TestCode")
 //@Disabled
 public class DecodeTeleOpTest extends OpMode {
-    final double FEED_TIME_SECONDS = 0.80; //The feeder servos run this long when a shot is requested.
+    final double FEED_TIME_SECONDS = 2.80; //The feeder servos run this long when a shot is requested.
     final double STOP_SPEED = 0.0; //We send this power to the servos when we want them to stop.
     final double FULL_SPEED = 1.0;
 
@@ -57,8 +57,8 @@ public class DecodeTeleOpTest extends OpMode {
     double launcherTarget = LAUNCHER_CLOSE_TARGET_VELOCITY; //These variables allow
     double launcherMin = LAUNCHER_CLOSE_MIN_VELOCITY;
 
-    final double LEFT_POSITION = 0.2962; //the left and right position for the diverter servo
-    final double RIGHT_POSITION = 0;
+    final double LEFT_POSITION = 0.3162; //the left and right position for the diverter servo
+    final double RIGHT_POSITION = 0.035;
 
     // Declare OpMode members.
     private DcMotor leftFrontDrive = null;
@@ -143,8 +143,6 @@ public class DecodeTeleOpTest extends OpMode {
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
         rightLauncher.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        intake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -232,10 +230,27 @@ public class DecodeTeleOpTest extends OpMode {
         if (gamepad1.aWasPressed()){
             switch (intakeState){
                 case ON:
+                    intake.setDirection(DcMotorSimple.Direction.FORWARD);
                     intakeState = IntakeState.OFF;
                     intake.setPower(0);
                     break;
                 case OFF:
+                    intake.setDirection(DcMotorSimple.Direction.REVERSE);
+                    intakeState = IntakeState.ON;
+                    intake.setPower(1);
+                    break;
+            }
+        }
+
+        if (gamepad1.bWasPressed()){
+            switch (intakeState){
+                case ON:
+                    intake.setDirection(DcMotorSimple.Direction.REVERSE);
+                    intakeState = IntakeState.OFF;
+                    intake.setPower(0);
+                    break;
+                case OFF:
+                    intake.setDirection(DcMotorSimple.Direction.FORWARD);
                     intakeState = IntakeState.ON;
                     intake.setPower(1);
                     break;
