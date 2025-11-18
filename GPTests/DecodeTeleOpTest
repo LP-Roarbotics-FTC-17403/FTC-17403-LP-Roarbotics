@@ -51,8 +51,8 @@ public class DecodeTeleOpTest extends OpMode {
     final double LAUNCHER_CLOSE_TARGET_VELOCITY = 1200; //in ticks/second for the close goal.
     final double LAUNCHER_CLOSE_MIN_VELOCITY = 1175; //minimum required to start a shot for close goal.
 
-    final double LAUNCHER_FAR_TARGET_VELOCITY = 1350; //Target velocity for far goal
-    final double LAUNCHER_FAR_MIN_VELOCITY = 1325; //minimum required to start a shot for far goal.
+    final double LAUNCHER_FAR_TARGET_VELOCITY = 1400; //Target velocity for far goal
+    final double LAUNCHER_FAR_MIN_VELOCITY = 1375; //minimum required to start a shot for far goal.
 
     double launcherTarget = LAUNCHER_CLOSE_TARGET_VELOCITY; //These variables allow
     double launcherMin = LAUNCHER_CLOSE_MIN_VELOCITY;
@@ -95,8 +95,20 @@ public class DecodeTeleOpTest extends OpMode {
         ON,
         OFF;
     }
+    
+    private enum leftFeederState [
+        ON,
+        OFF;
+    }
+
+    private enum rightFeederState [
+        ON,
+        OFF;
+    }
 
     private IntakeState intakeState = IntakeState.OFF;
+    private leftFeederState leftFeederState = leftFeederState.OFF;
+    private rightFeederState rightFeederState = rightFeederState.OFF;
 
     private enum LauncherDistance {
         CLOSE,
@@ -226,6 +238,28 @@ public class DecodeTeleOpTest extends OpMode {
                     break;
             }
         }
+        
+        if (gamepad2.dpadLeftWasPressed()) {
+            switch (leftFeederState) {
+                case ON:
+                    leftFeeder.setDirection(CRServo.Direction.FORWARD);
+                    leftFeeder.setPower(FULL_SPEED);
+                case OFF:
+                    leftFeeder.setDirection(CRServo.Direction.REVERSE);
+                    leftFeeder.setPower(0);
+            }
+        }
+        
+        if (gamepad2.dpadRightWasPressed()) {
+            switch (rightFeederState) {
+                case ON:
+                    rightFeeder.setDirection(CRServo.Direction.REVERSE);
+                    rightFeeder.setPower(FULL_SPEED);
+                case OFF:
+                    rightFeeder.setDirection(CRServo.Direction.FORWARD);
+                    rightFeeder.setPower(0);
+            }
+        }
 
         if (gamepad1.aWasPressed()){
             switch (intakeState){
@@ -271,6 +305,13 @@ public class DecodeTeleOpTest extends OpMode {
                     break;
             }
         }
+        
+        if(gamepad1.left_stick_button) {
+           leftFrontDrive.setPower(leftFrontPower);
+           leftBackDrive.setPower(leftBackPower);
+           rightFrontDrive.setPower(rightFrontPower);
+           rightBackDrive.setPower(rightBackPower);
+        }
 
         /*
          * Now we call our "Launch" function.
@@ -285,8 +326,7 @@ public class DecodeTeleOpTest extends OpMode {
         telemetry.addData("launch distance", launcherDistance);
         telemetry.addData("Left Launcher Velocity", leftLauncher.getVelocity());
         telemetry.addData("Right Launcher Velocity", rightLauncher.getVelocity());
-
-    }
+}
 
     /*
      * Code to run ONCE after the driver hits STOP
@@ -309,15 +349,15 @@ public class DecodeTeleOpTest extends OpMode {
            // This ensures all the powers maintain the same ratio,
            // but only if at least one is out of the range [-1, 1]
            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-           double frontLeftPower = (y + x + rx) / denominator;
-           double backLeftPower = (y - x + rx) / denominator;
-           double frontRightPower = (y - x - rx) / denominator;
-           double backRightPower = (y + x - rx) / denominator;
+           double leftFrontPower = (y + x + rx) / denominator;
+           double leftBackPower = (y - x + rx) / denominator;
+           double rightFrontPower = (y - x - rx) / denominator;
+           double rightBackPower = (y + x - rx) / denominator;
 
-           leftFrontDrive.setPower(frontLeftPower);
-           leftBackDrive.setPower(backLeftPower);
-           rightFrontDrive.setPower(frontRightPower);
-           rightBackDrive.setPower(backRightPower);
+           leftFrontDrive.setPower(leftFrontPower);
+           leftBackDrive.setPower(leftBackPower);
+           rightFrontDrive.setPower(rightFrontPower);
+           rightBackDrive.setPower(rightBackPower);
       
 
     }
