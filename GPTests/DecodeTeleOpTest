@@ -68,6 +68,7 @@ public class DecodeTeleOpTest extends OpMode {
     private DcMotorEx leftLauncher = null;
     private DcMotorEx rightLauncher = null;
     private DcMotor intake = null;
+    private DcMotor transfer = null;
     private CRServo leftFeeder = null;
     private CRServo rightFeeder = null;
     private Servo diverter = null;
@@ -95,6 +96,11 @@ public class DecodeTeleOpTest extends OpMode {
         ON,
         OFF;
     }
+
+    private enum TransferState {
+        ON,
+        OFF;
+    }
     
     private enum leftFeederState [
         ON,
@@ -107,8 +113,9 @@ public class DecodeTeleOpTest extends OpMode {
     }
 
     private IntakeState intakeState = IntakeState.OFF;
-    private leftFeederState leftFeederState = leftFeederState.OFF;
-    private rightFeederState rightFeederState = rightFeederState.OFF;
+    private TransferState transferState = TransferState.OFF;
+    private LeftFeederState leftFeederState = LeftFeederState.OFF;
+    private RightFeederState rightFeederState = RightFeederState.OFF;
 
     private enum LauncherDistance {
         CLOSE,
@@ -138,6 +145,7 @@ public class DecodeTeleOpTest extends OpMode {
         leftLauncher = hardwareMap.get(DcMotorEx.class, "left_launcher");
         rightLauncher = hardwareMap.get(DcMotorEx.class, "right_launcher");
         intake = hardwareMap.get(DcMotor.class, "intake");
+        transfer = hardwareMap.get(DcMotor.class, "transfer");
         leftFeeder = hardwareMap.get(CRServo.class, "left_feeder");
         rightFeeder = hardwareMap.get(CRServo.class, "right_feeder");
         diverter = hardwareMap.get(Servo.class, "diverter");
@@ -276,6 +284,7 @@ public class DecodeTeleOpTest extends OpMode {
             }
         }
 
+
         if (gamepad1.bWasPressed()){
             switch (intakeState){
                 case ON:
@@ -287,6 +296,36 @@ public class DecodeTeleOpTest extends OpMode {
                     intake.setDirection(DcMotorSimple.Direction.FORWARD);
                     intakeState = IntakeState.ON;
                     intake.setPower(1);
+                    break;
+            }
+        }
+
+                if (gamepad1.xWasPressed()){
+            switch (transferState){
+                case ON:
+                    transfer.setDirection(DcMotorSimple.Direction.REVERSE);
+                    transferState = TransferState.OFF;
+                    transfer.setPower(0);
+                    break;
+                case OFF:
+                    transfer.setDirection(DcMotorSimple.Direction.FORWARD);
+                    TransferState = TransferState.ON;
+                    transfer.setPower(1);
+                    break;
+            }
+        }
+
+                if (gamepad1.yWasPressed()){
+            switch (transferState){
+                case ON:
+                    transfer.setDirection(DcMotorSimple.Direction.FORWARD);
+                    transferState = TransferState.OFF;
+                    transfer.setPower(0);
+                    break;
+                case OFF:
+                    transfer.setDirection(DcMotorSimple.Direction.REVERSE);
+                    TransferState = TransferState.ON;
+                    transfer.setPower(1);
                     break;
             }
         }
