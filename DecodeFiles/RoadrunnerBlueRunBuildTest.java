@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.SubSystems.Inhaler;
 import org.firstinspires.ftc.teamcode.SubSystems.LED;
 import org.firstinspires.ftc.teamcode.SubSystems.MotorClass;
 
-@Autonomous(name = "don't touch me1")
-public final class RoadRunnerBlueAuto extends LinearOpMode {
+@Autonomous(name = "don't touch me4")
+public final class RoadrunnerBlueRunBuildTest extends LinearOpMode {
 
     private Pose2d beginPose;
     private Pose2d launchPose;
@@ -102,41 +102,12 @@ public final class RoadRunnerBlueAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-16,-15), Math.toRadians(227))
                 .build();
 
-        Action secondCycle = drive.actionBuilder(launchPose)
-                .splineToSplineHeading(new Pose2d(-6,-22, Math.toRadians(270)), Math.toRadians(270))
-                .afterDisp(7, ()->
-                        Actions.runBlocking(
-                                new ParallelAction(
-                                        hammer.left()
-                                )
-                        ))
-                .lineToYLinearHeading(-43, Math.toRadians(270), new TranslationalVelConstraint(10.0))
-                .splineToSplineHeading(launchPose, Math.toRadians(90))
+        Action endCycle = drive.actionBuilder(launchPose)
+                .strafeToLinearHeading(new Vector2d(0,-20), Math.toRadians(134))
                 .build();
 
-        Action thirdCycle = drive.actionBuilder(launchPose)
-                .splineToSplineHeading(new Pose2d(22,-18, Math.toRadians(270)), Math.toRadians(270))
-                .afterDisp(0.1, ()->
-                        Actions.runBlocking(
-                                new ParallelAction(
-                                        hammer.left()
-                                )
-                        ))
-                .lineToYLinearHeading(-34, Math.toRadians(270), new TranslationalVelConstraint(10.0))
-                .splineToSplineHeading(launchPose, Math.toRadians(200))
-                .build();
 
-        Action fourthCycle = drive.actionBuilder(launchPose)
-                .splineToSplineHeading(new Pose2d(48,-25, Math.toRadians(270)), Math.toRadians(270))
-                .afterDisp(4, ()->
-                        Actions.runBlocking(
-                                new ParallelAction(
-                                        hammer.left()
-                                )
-                        ))
-                .lineToYLinearHeading(-40, Math.toRadians(270), new TranslationalVelConstraint(10.0))
-                .splineToSplineHeading(launchPose, Math.toRadians(140))
-                .build();
+
 
 
 
@@ -151,21 +122,61 @@ public final class RoadRunnerBlueAuto extends LinearOpMode {
                                     inhaler1.intakeOn(),
                                     inhaler2.intakeOn()
                             ),
-                            firstCycle,
-                            testLaunchCycle(),
-                            hammer.right(),
-                            secondCycle,
-                            testLaunchCycle(),
-                            hammer.right(),
-                            thirdCycle,
-                            testLaunchCycle(),
-                            hammer.right(),
-                            fourthCycle,
-                            testLaunchCycle(),
-                            hammer.right()
+                            firstCycle
                     )
             );
 
+        Action secondCycle = drive.actionBuilder(drive.localizer.getPose())
+                .splineToSplineHeading(new Pose2d(-6,-22, Math.toRadians(270)), Math.toRadians(270))
+                .afterDisp(7, ()->
+                        Actions.runBlocking(
+                                new ParallelAction(
+                                        hammer.left()
+                                )
+                        ))
+                .lineToYLinearHeading(-43, Math.toRadians(270), new TranslationalVelConstraint(10.0))
+                .splineToSplineHeading(launchPose, Math.toRadians(90))
+                .build();
+
+        Actions.runBlocking(
+                new SequentialAction(
+                        testLaunchCycle(),
+                        hammer.right(),
+                        secondCycle,
+                        testLaunchCycle(),
+                        hammer.right()
+                )
+        );
+        Action thirdCycle = drive.actionBuilder(drive.localizer.getPose())
+                .splineToSplineHeading(new Pose2d(22,-18, Math.toRadians(270)), Math.toRadians(270))
+                .afterDisp(0.1, ()->
+                        Actions.runBlocking(
+                                new ParallelAction(
+                                        hammer.left()
+                                )
+                        ))
+                .lineToYLinearHeading(-34, Math.toRadians(270), new TranslationalVelConstraint(10.0))
+                .lineToYLinearHeading(-30, Math.toRadians(270))
+                .splineToSplineHeading(launchPose, Math.toRadians(200))
+                .build();
+        Actions.runBlocking(
+                new SequentialAction(
+                        thirdCycle,
+                        testLaunchCycle(),
+                        endCycle
+                )
+        );
+        Action fourthCycle = drive.actionBuilder(drive.localizer.getPose())
+                .splineToSplineHeading(new Pose2d(48,-25, Math.toRadians(270)), Math.toRadians(270))
+                .afterDisp(4, ()->
+                        Actions.runBlocking(
+                                new ParallelAction(
+                                        hammer.left()
+                                )
+                        ))
+                .lineToYLinearHeading(-40, Math.toRadians(270), new TranslationalVelConstraint(10.0))
+                .splineToSplineHeading(launchPose, Math.toRadians(140))
+                .build();
 
 
     }

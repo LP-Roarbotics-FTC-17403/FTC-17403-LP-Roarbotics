@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.SubSystems.Inhaler;
 import org.firstinspires.ftc.teamcode.SubSystems.LED;
 import org.firstinspires.ftc.teamcode.SubSystems.MotorClass;
 
-@Autonomous
+@Autonomous(name = "don't touch me6")
 public final class RoadRunnerRedAuto extends LinearOpMode {
 
     private Pose2d beginPose;

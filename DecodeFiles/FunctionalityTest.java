@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.SubSystems.Inhaler;
 import org.firstinspires.ftc.teamcode.SubSystems.LED;
 import org.firstinspires.ftc.teamcode.SubSystems.MotorClass;
 
-@TeleOp
+@TeleOp(group = "Trouble Shoot")
 public final class FunctionalityTest extends LinearOpMode {
 
     private Pose2d beginPose                = new Pose2d(0, 0, 0);

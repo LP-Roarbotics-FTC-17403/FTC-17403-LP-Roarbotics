@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.SubSystems.CameraSystem;
@@ -24,8 +25,8 @@ import org.firstinspires.ftc.teamcode.SubSystems.Inhaler;
 import org.firstinspires.ftc.teamcode.SubSystems.LED;
 import org.firstinspires.ftc.teamcode.SubSystems.MotorClass;
 
-@Autonomous(name = "don't touch me1")
-public final class RoadRunnerBlueAuto extends LinearOpMode {
+@Autonomous(group = "MSI")
+public final class MSI_BlueSideGoalWithPattern extends LinearOpMode {
 
     private Pose2d beginPose;
     private Pose2d launchPose;
@@ -46,6 +47,8 @@ public final class RoadRunnerBlueAuto extends LinearOpMode {
 
     private Hammer hammer;
 
+    private ElapsedTime timer = new ElapsedTime();
+
     final double FEED_TIME_SECONDS = 0.80; //The feeder servos run this long when a shot is requested.
     final double STOP_SPEED = 0.0; //We send this power to the servos when we want them to stop.
     final double FULL_SPEED = 1.0;
@@ -61,6 +64,8 @@ public final class RoadRunnerBlueAuto extends LinearOpMode {
 
     final double LEFT_POSITION = 0.2962; //the left and right position for the diverter servo
     final double RIGHT_POSITION = 0;
+
+    int patternNumber = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -96,15 +101,52 @@ public final class RoadRunnerBlueAuto extends LinearOpMode {
         inhaler1.initialize(reverse);
         inhaler2.initialize(reverse);
         vroom.initialize(true);
-        //camera.cameraOn();
+        camera.cameraOn();
 
         Action firstCycle = drive.actionBuilder(beginPose)
-                .strafeToLinearHeading(new Vector2d(-16,-15), Math.toRadians(227))
+                .strafeToLinearHeading(new Vector2d(-16,-15), Math.toRadians(165))
                 .build();
 
-        Action secondCycle = drive.actionBuilder(launchPose)
+
+        Action endCycle = drive.actionBuilder(launchPose)
+                .strafeToLinearHeading(new Vector2d(0,-20), Math.toRadians(134))
+                .build();
+
+        waitForStart();
+            timer.reset();
+            Actions.runBlocking(
+                    new SequentialAction(
+                            new ParallelAction(
+                                    leftFirecracker.closeLaunch(),
+                                    rightFirecracker.closeLaunch(),
+                                    inhaler1.intakeOn(),
+                                    inhaler2.intakeOn()
+                            ),
+                            firstCycle
+                    )
+            );
+            while(opModeIsActive() && patternNumber != 21 && patternNumber != 22 && patternNumber != 23 && timer.seconds()<5){
+                patternNumber = camera.getPattern();
+            }
+
+
+
+
+        Action turning  = drive.actionBuilder(drive.localizer.getPose())
+                .turnTo(Math.toRadians(227))
+                .build();
+
+        Actions.runBlocking(
+                new SequentialAction(
+                        turning,
+                        firstCycleLaunch(),
+                        hammer.right()
+                )
+        );
+
+        Action secondCycle = drive.actionBuilder(drive.localizer.getPose())
                 .splineToSplineHeading(new Pose2d(-6,-22, Math.toRadians(270)), Math.toRadians(270))
-                .afterDisp(7, ()->
+                .afterDisp(4.5, ()->
                         Actions.runBlocking(
                                 new ParallelAction(
                                         hammer.left()
@@ -114,57 +156,35 @@ public final class RoadRunnerBlueAuto extends LinearOpMode {
                 .splineToSplineHeading(launchPose, Math.toRadians(90))
                 .build();
 
-        Action thirdCycle = drive.actionBuilder(launchPose)
-                .splineToSplineHeading(new Pose2d(22,-18, Math.toRadians(270)), Math.toRadians(270))
-                .afterDisp(0.1, ()->
+        Actions.runBlocking(
+                new SequentialAction(
+                        secondCycle,
+                        secondCycleLaunch(),
+                        hammer.right()
+                )
+        );
+
+        Action thirdCycle = drive.actionBuilder(drive.localizer.getPose())
+                .splineToSplineHeading(new Pose2d(22,-17.3, Math.toRadians(270)), Math.toRadians(270))
+                .afterDisp(0, ()->
                         Actions.runBlocking(
                                 new ParallelAction(
                                         hammer.left()
                                 )
                         ))
-                .lineToYLinearHeading(-34, Math.toRadians(270), new TranslationalVelConstraint(10.0))
+                .lineToYLinearHeading(-36, Math.toRadians(270), new TranslationalVelConstraint(10.0))
+                .lineToYLinearHeading(-30, Math.toRadians(270))
                 .splineToSplineHeading(launchPose, Math.toRadians(200))
                 .build();
 
-        Action fourthCycle = drive.actionBuilder(launchPose)
-                .splineToSplineHeading(new Pose2d(48,-25, Math.toRadians(270)), Math.toRadians(270))
-                .afterDisp(4, ()->
-                        Actions.runBlocking(
-                                new ParallelAction(
-                                        hammer.left()
-                                )
-                        ))
-                .lineToYLinearHeading(-40, Math.toRadians(270), new TranslationalVelConstraint(10.0))
-                .splineToSplineHeading(launchPose, Math.toRadians(140))
-                .build();
+        Actions.runBlocking(
+                new SequentialAction(
+                        thirdCycle,
+                        thirdCycleLaunch(),
+                        endCycle
+                )
+        );
 
-
-
-
-        waitForStart();
-
-            Actions.runBlocking(
-                    new SequentialAction(
-                            new ParallelAction(
-                                    leftFirecracker.closeLaunch(),
-                                    rightFirecracker.closeLaunch(),
-                                    inhaler1.intakeOn(),
-                                    inhaler2.intakeOn()
-                            ),
-                            firstCycle,
-                            testLaunchCycle(),
-                            hammer.right(),
-                            secondCycle,
-                            testLaunchCycle(),
-                            hammer.right(),
-                            thirdCycle,
-                            testLaunchCycle(),
-                            hammer.right(),
-                            fourthCycle,
-                            testLaunchCycle(),
-                            hammer.right()
-                    )
-            );
 
 
 
@@ -250,6 +270,72 @@ public final class RoadRunnerBlueAuto extends LinearOpMode {
                 rightFeeder.rest(),
                 leftFeeder.feed(),
                 new SleepAction(1),
+                leftFeeder.rest()
+        );
+    }
+    public Action firstCycleLaunch(){
+        if(patternNumber == 21){
+            return rightLeftLeft();
+        }else if(patternNumber == 22){
+            return leftRightLeft();
+        }else{
+            return leftLeftRight();
+        }
+    }
+    public Action secondCycleLaunch(){
+        if(patternNumber == 21){
+            return leftRightLeft();
+        }else if(patternNumber == 22){
+            return leftLeftRight();
+        }else{
+            return leftRightLeft();
+        }
+    }
+    public Action thirdCycleLaunch(){
+        if(patternNumber == 21){
+            return leftRightLeft();
+        }else if(patternNumber == 22){
+            return rightLeftLeft();
+        }else{
+            return leftRightLeft();
+        }
+    }
+    public Action leftLeftRight(){
+        return new SequentialAction(
+                leftFeeder.feed(),
+                new SleepAction(0.8),
+                leftFeeder.rest(),
+                leftFeeder.feed(),
+                new SleepAction(0.8),
+                leftFeeder.rest(),
+                rightFeeder.feed(),
+                new SleepAction(0.8),
+                rightFeeder.rest()
+        );
+    }
+    public Action leftRightLeft(){
+        return new SequentialAction(
+                leftFeeder.feed(),
+                new SleepAction(0.8),
+                leftFeeder.rest(),
+                rightFeeder.feed(),
+                new SleepAction(0.8),
+                rightFeeder.rest(),
+                leftFeeder.feed(),
+                new SleepAction(0.8),
+                leftFeeder.rest()
+        );
+    }
+    public Action rightLeftLeft(){
+        return new SequentialAction(
+                rightFeeder.feed(),
+                new SleepAction(0.8),
+                rightFeeder.rest(),
+                leftFeeder.feed(),
+                new SleepAction(0.8),
+                leftFeeder.rest(),
+                leftFeeder.feed(),
+                new SleepAction(0.8),
                 leftFeeder.rest()
         );
     }

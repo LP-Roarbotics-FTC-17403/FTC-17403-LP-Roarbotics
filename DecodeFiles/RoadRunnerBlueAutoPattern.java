@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.SubSystems.Inhaler;
 import org.firstinspires.ftc.teamcode.SubSystems.LED;
 import org.firstinspires.ftc.teamcode.SubSystems.MotorClass;
 
-@Autonomous
+@Autonomous(name = "don't touch me2")
 public final class RoadRunnerBlueAutoPattern extends LinearOpMode {
 
     private Pose2d beginPose;
@@ -112,8 +112,8 @@ public final class RoadRunnerBlueAutoPattern extends LinearOpMode {
                 .build();
 
         Action secondCycle = drive.actionBuilder(launchPose)
-                .splineToSplineHeading(new Pose2d(-3,-22, Math.toRadians(270)), Math.toRadians(270))
-                .afterDisp(4.5, ()->
+                .splineToSplineHeading(new Pose2d(-6,-22, Math.toRadians(270)), Math.toRadians(270))
+                .afterDisp(7, ()->
                         Actions.runBlocking(
                                 new ParallelAction(
                                         hammer.left()
@@ -124,8 +124,8 @@ public final class RoadRunnerBlueAutoPattern extends LinearOpMode {
                 .build();
 
         Action thirdCycle = drive.actionBuilder(launchPose)
-                .splineToSplineHeading(new Pose2d(26,-18, Math.toRadians(270)), Math.toRadians(270))
-                .afterDisp(1.0, ()->
+                .splineToSplineHeading(new Pose2d(22,-18, Math.toRadians(270)), Math.toRadians(270))
+                .afterDisp(0.1, ()->
                         Actions.runBlocking(
                                 new ParallelAction(
                                         hammer.left()

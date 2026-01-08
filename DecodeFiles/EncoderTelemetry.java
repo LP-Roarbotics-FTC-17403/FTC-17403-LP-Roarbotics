@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import java.util.ArrayList;
 
-@TeleOp
+@TeleOp(group = "Trouble Shoot")
 public final class EncoderTelemetry extends LinearOpMode {
 
     //enter how many motors you have

@@ -51,10 +51,18 @@ public class CameraSystem {
     }
 
     public void cameraOn(){
-        camera.openCameraDevice();
-        camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-    }
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+            }
 
+            @Override
+            public void onError(int errorCode) {
+
+            }
+        });
+    }
     public void updateDesiredDetection(int id){
         ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
         if (detections != null) {
