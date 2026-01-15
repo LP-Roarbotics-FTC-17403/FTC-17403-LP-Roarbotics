@@ -102,12 +102,12 @@ public class DecodeTeleOpTest extends OpMode {
         OFF;
     }
     
-    private enum leftFeederState [
+    private enum LeftFeederState {
         ON,
         OFF;
     }
 
-    private enum rightFeederState [
+    private enum RightFeederState {
         ON,
         OFF;
     }
@@ -309,7 +309,7 @@ public class DecodeTeleOpTest extends OpMode {
                     break;
                 case OFF:
                     transfer.setDirection(DcMotorSimple.Direction.FORWARD);
-                    TransferState = TransferState.ON;
+                    transferState = TransferState.ON;
                     transfer.setPower(1);
                     break;
             }
@@ -324,7 +324,7 @@ public class DecodeTeleOpTest extends OpMode {
                     break;
                 case OFF:
                     transfer.setDirection(DcMotorSimple.Direction.REVERSE);
-                    TransferState = TransferState.ON;
+                    transferState = TransferState.ON;
                     transfer.setPower(1);
                     break;
             }
@@ -350,6 +350,13 @@ public class DecodeTeleOpTest extends OpMode {
            leftBackDrive.setPower(leftBackPower);
            rightFrontDrive.setPower(rightFrontPower);
            rightBackDrive.setPower(rightBackPower);
+        }
+        
+        if (gamepad1.right_trigger>0) {
+            leftFrontDrive.setPower (leftFrontPower/2);
+            leftBackDrive.setPower(leftBackPower/2);
+            rightFrontDrive.setPower(rightFrontPower/2);
+            rightBackDrive.setPower(rightBackPower/2);
         }
 
         /*
